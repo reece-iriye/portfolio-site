@@ -1,0 +1,141 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	font-family: 'Ubuntu', sans-serif;
+	background-color: #F3DFC1;
+	color: #333;
+	line-height: 1.6;
+}
+
+/* === HEADER === */
+header {
+	position: relative;
+	width: 100%;
+	padding: 1.25rem 0 0;
+}
+
+.header-content {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	padding: 0 2.5rem;
+}
+
+/* === LOGO === */
+.logo-wrapper {
+	position: relative;
+	width: 10.0938rem;
+	height: 4.0056rem;
+	filter: drop-shadow(0px 0.25rem 0.25rem rgba(0, 0, 0, 0.25));
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.logo-text {
+	position: absolute;
+	width: 9.8318rem;
+	height: 2.1538rem;
+	left: 0;
+	top: 0;
+	font-family: 'Ubuntu';
+	font-style: normal;
+	font-weight: 700;
+	font-size: 1.4rem;
+	line-height: 1.6rem;
+	color: #000000;
+	transform: rotate(-7.65deg);
+}
+
+.bar-container {
+	position: absolute;
+	width: 7.6557rem;
+	left: 0;
+	top: 2.1538rem;
+}
+
+.bar {
+	position: absolute;
+	width: 100%;
+	height: 0.3rem;
+	border-radius: 2.5rem;
+	transform: matrix(0.99, -0.13, -0.13, -0.99, 0, 0);
+}
+
+.bar.pink {
+	top: 0;
+	background: #ED4D6E;
+}
+
+.bar.teal {
+	top: 0.7rem;
+	background: #44A1A0;
+}
+
+/* === MAIN & SECTIONS === */
+main {
+	padding: 2rem;
+}
+
+section {
+	margin-bottom: 3rem;
+}
+
+section h2 {
+	margin-left: 2.5rem;
+	font-size: 2rem;
+}
+
+section p {
+	font-size: 1.1rem;
+	margin-left: 2.5rem;
+}
+
+/* === NAVIGATION === */
+.nav-wrapper {
+	position: relative;
+	background-color: #BB7D25;
+	border-radius: 3.125rem;
+	padding: 0.625rem 1.25rem;
+	z-index: 1;
+	box-shadow: 0px 0.25rem 0.9375rem rgba(0, 0, 0, 0.1);
+	filter: drop-shadow(0px 0.25rem 0.25rem rgba(0, 0, 0, 0.25));
+}
+
+.nav-list {
+	list-style: none;
+	display: flex;
+	gap: 1.25rem;
+	margin: 0;
+	padding: 0;
+}
+
+.nav-list li a {
+	color: white;
+	text-decoration: none;
+	font-weight: bold;
+	padding: 0.3125rem 0.625rem;
+	border-radius: 1.875rem;
+	transition: background 0.2s;
+}
+
+.nav-list li a:hover,
+.nav-list li a.active {
+	background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* === FOOTER === */
+footer {
+	background-color: #F3DFC1;
+	padding: 2rem;
+	text-align: center;
+	color: #333;
+}
+
+footer p {
+	margin: 0;
+}
