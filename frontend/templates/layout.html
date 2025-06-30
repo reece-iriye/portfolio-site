@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reece Iriye</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@700&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+</head>
+
+<body>
+  <header>
+    <div class="header-content">
+      <a href="/" hx-get="/" hx-target="#content" hx-swap="innerHTML">
+        <div class="logo-wrapper">
+          <h1 class="logo-text">Reece Iriye</h1>
+          <div class="bar-container">
+            <div class="bar pink"></div>
+            <div class="bar teal"></div>
+          </div>
+        </div>
+      </a>
+      <nav class="nav-wrapper">
+        <ul class="nav-list">
+          <li>
+            <a href="/" hx-get="/" hx-target="#content" hx-swap="innerHTML">Home</a>
+          </li>
+          <li>
+            <a href="/work-history" hx-get="/work-history" hx-target="#content" hx-swap="innerHTML">Work History</a>
+          </li>
+          <li>
+            <a href="/projects" hx-get="/projects" hx-target="#content" hx-swap="innerHTML">Projects</a>
+          </li>
+          <li>
+            <a href="/speaking-engagements" hx-get="/speaking-engagements" hx-target="#content"
+              hx-swap="innerHTML">Speaking Engagements</a>
+          </li>
+          <li>
+            <a href="/metrics" hx-get="/metrics" hx-target="#content" hx-swap="innerHTML">Metrics</a>
+          </li>
+          <li>
+            <a href="/contact-me" hx-get="/contact-me" hx-target="#content" hx-swap="innerHTML">Contact Me</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="content">
+    {{.Content}}
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Reece Iriye</p>
+  </footer>
+</body>
+
+</html>
