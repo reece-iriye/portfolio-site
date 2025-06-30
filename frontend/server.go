@@ -81,7 +81,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	data := map[string]interface{}{
 		"Content": template.HTML(contentBuffer.String()),
 	}
-	renderTemplate(w, "layout", data)
+	renderTemplate(w, "home", data)
 }
 
 func aboutHandler(w http.ResponseWriter, r *http.Request) {
