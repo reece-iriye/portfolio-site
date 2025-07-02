@@ -13,7 +13,7 @@
 <body>
   <header>
     <div class="header-content">
-      <a href="/" hx-get="/" hx-target="#content" hx-swap="innerHTML">
+      <a href="/" hx-get="/" hx-target="#content" hx-swap="innerHTML" hx-push-url="true">
         <div class="logo-wrapper">
           <h1 class="logo-text">Reece Iriye</h1>
           <div class="bar-container">
@@ -25,23 +25,26 @@
       <nav class="nav-wrapper">
         <ul class="nav-list">
           <li>
-            <a href="/" hx-get="/" hx-target="#content" hx-swap="innerHTML">Home</a>
+            <a href="/" hx-get="/" hx-target="#content" hx-swap="innerHTML" hx-push-url="true">Home</a>
           </li>
           <li>
-            <a href="/work-history" hx-get="/work-history" hx-target="#content" hx-swap="innerHTML">Work History</a>
+            <a href="/work-history" hx-get="/work-history" hx-target="#content" hx-swap="innerHTML"
+              hx-push-url="true">Work History</a>
           </li>
           <li>
-            <a href="/projects" hx-get="/projects" hx-target="#content" hx-swap="innerHTML">Projects</a>
+            <a href="/projects" hx-get="/projects" hx-target="#content" hx-swap="innerHTML"
+              hx-push-url="true">Projects</a>
           </li>
           <li>
-            <a href="/speaking-engagements" hx-get="/speaking-engagements" hx-target="#content"
-              hx-swap="innerHTML">Speaking Engagements</a>
+            <a href="/speaking-engagements" hx-get="/speaking-engagements" hx-target="#content" hx-swap="innerHTML"
+              hx-push-url="true">Speaking Engagements</a>
           </li>
           <li>
-            <a href="/metrics" hx-get="/metrics" hx-target="#content" hx-swap="innerHTML">Metrics</a>
+            <a href="/metrics" hx-get="/metrics" hx-target="#content" hx-swap="innerHTML" hx-push-url="true">Metrics</a>
           </li>
           <li>
-            <a href="/contact-me" hx-get="/contact-me" hx-target="#content" hx-swap="innerHTML">Contact Me</a>
+            <a href="/contact-me" hx-get="/contact-me" hx-target="#content" hx-swap="innerHTML"
+              hx-push-url="true">Contact Me</a>
           </li>
         </ul>
       </nav>
