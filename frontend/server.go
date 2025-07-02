@@ -30,104 +30,47 @@ func main() {
 	}
 }
 
-func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
-	layoutPath := filepath.Join("templates", "layout.html")
-	contentPath := filepath.Join("templates", "content", fmt.Sprintf("%s.html", tmpl))
+func renderPage(w http.ResponseWriter, r *http.Request, page string, data interface{}) {
+	contentPath := filepath.Join("templates", "content", fmt.Sprintf("%s.html", page))
 
-	t, err := template.ParseFiles(layoutPath, contentPath)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	// HTMX: render only the inner content template
+	if r.Header.Get("HX-Request") == "true" {
+		t := template.Must(template.ParseFiles(contentPath))
+		t.ExecuteTemplate(w, "Content", data) // ✅ FIXED
 		return
 	}
 
-	if err := t.Execute(w, data); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-}
+	// Non-HTMX: render full layout with content injected
+	contentBuf := new(bytes.Buffer)
+	t := template.Must(template.ParseFiles(contentPath))
+	t.ExecuteTemplate(contentBuf, "Content", data) // ✅ FIXED
 
-func renderContent(w http.ResponseWriter, tmpl string) {
-	templatePath := filepath.Join("templates", "content", fmt.Sprintf("%s.html", tmpl))
-
-	t, err := template.ParseFiles(templatePath)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	if err := t.ExecuteTemplate(w, "Content", nil); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+	fullLayout := template.Must(template.ParseFiles("templates/layout.html"))
+	fullLayout.Execute(w, map[string]interface{}{
+		"Content": template.HTML(contentBuf.String()),
+	})
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Header.Get("HX-Request") == "true" {
-		renderContent(w, "home")
-		return
-	}
-
-	contentTemplatePath := filepath.Join("templates", "content", "home.html")
-	t, err := template.ParseFiles(contentTemplatePath)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	var contentBuffer bytes.Buffer
-	if err := t.ExecuteTemplate(&contentBuffer, "Content", nil); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	data := map[string]interface{}{
-		"Content": template.HTML(contentBuffer.String()),
-	}
-	renderTemplate(w, "home", data)
-}
-
-func aboutHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Header.Get("HX-Request") == "true" {
-		renderContent(w, "about")
-	} else {
-		renderTemplate(w, "about", nil)
-	}
+	renderPage(w, r, "home", nil)
 }
 
 func workHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Header.Get("HX-Request") == "true" {
-		renderContent(w, "work-history")
-	} else {
-		renderTemplate(w, "work-history", nil)
-	}
+	renderPage(w, r, "work-history", nil)
 }
 
 func projectsHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Header.Get("HX-Request") == "true" {
-		renderContent(w, "projects")
-	} else {
-		renderTemplate(w, "projects", nil)
-	}
+	renderPage(w, r, "projects", nil)
 }
 
 func speakingHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Header.Get("HX-Request") == "true" {
-		renderContent(w, "speaking-engagements")
-	} else {
-		renderTemplate(w, "speaking-engagements", nil)
-	}
+	renderPage(w, r, "speaking-engagements", nil)
 }
 
 func metricsHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Header.Get("HX-Request") == "true" {
-		renderContent(w, "metrics")
-	} else {
-		renderTemplate(w, "metrics", nil)
-	}
+	renderPage(w, r, "metrics", nil)
 }
 
 func contactHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Header.Get("HX-Request") == "true" {
-		renderContent(w, "contact-me")
-	} else {
-		renderTemplate(w, "contact-me", nil)
-	}
+	renderPage(w, r, "contact-me", nil)
 }
