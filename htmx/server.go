@@ -10,21 +10,22 @@ import (
 )
 
 func main() {
-	http.Handle(
+	mux := http.NewServeMux()
+	mux.Handle(
 		"/static/",
 		http.StripPrefix("/static/", http.FileServer(http.Dir("static"))),
 	)
 
-	http.HandleFunc("/", homeHandler)
-	http.HandleFunc("/home", homeHandler)
-	http.HandleFunc("/work-history", workHandler)
-	http.HandleFunc("/projects", projectsHandler)
-	http.HandleFunc("/speaking-engagements", speakingHandler)
-	http.HandleFunc("/metrics", metricsHandler)
-	http.HandleFunc("/contact-me", contactHandler)
+	mux.HandleFunc("GET /", homeHandler)
+	mux.HandleFunc("GET /home", homeHandler)
+	mux.HandleFunc("GET /work-history", workHandler)
+	mux.HandleFunc("GET /projects", projectsHandler)
+	mux.HandleFunc("GET /speaking-engagements", speakingHandler)
+	mux.HandleFunc("GET /metrics", metricsHandler)
+	mux.HandleFunc("GET /contact-me", contactHandler)
 
 	fmt.Println("Server running on :8080")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	if err := http.ListenAndServe(":8080", mux); err != nil {
 		fmt.Println("Error starting server:", err)
 		os.Exit(1)
 	}
@@ -36,14 +37,14 @@ func renderPage(w http.ResponseWriter, r *http.Request, page string, data interf
 	// HTMX: render only the inner content template
 	if r.Header.Get("HX-Request") == "true" {
 		t := template.Must(template.ParseFiles(contentPath))
-		t.ExecuteTemplate(w, "Content", data) // ✅ FIXED
+		t.ExecuteTemplate(w, "Content", data)
 		return
 	}
 
 	// Non-HTMX: render full layout with content injected
 	contentBuf := new(bytes.Buffer)
 	t := template.Must(template.ParseFiles(contentPath))
-	t.ExecuteTemplate(contentBuf, "Content", data) // ✅ FIXED
+	t.ExecuteTemplate(contentBuf, "Content", data)
 
 	fullLayout := template.Must(template.ParseFiles("templates/layout.html"))
 	fullLayout.Execute(w, map[string]interface{}{
