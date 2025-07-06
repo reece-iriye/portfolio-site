@@ -1,9 +1,56 @@
 {{define "Content"}}
-<section id="home">
-  <h2>Welcome</h2>
-  <p>
-    Welcome to my portfolio site. I'm a software engineer with expertise in Go,
-    Kubernetes, and platform engineering.
-  </p>
+<section class="home-hero">
+  <div class="hero-text">
+    <div class="hero-greeting">Hello, I'm</div>
+    <h1 class="hero-name">Reece Iriye</h1>
+    <h2 class="hero-title">DevOps Engineer</h2>
+    <p class="hero-description">
+      I build and maintain Kubernetes-native microservices and SRE solutions at enterprise scale, handling millions of
+      devices and high-volume traffic. Experienced in Python + Go automation, observability tooling, and seamless
+      infrastructure operations.
+    </p>
+
+    <div class="company-logos">
+      <div class="company-logo-item">
+        <img src="/static/assets/verizon-logo.svg" alt="Verizon" class="company-logo">
+        <div class="company-info">
+          <span class="company-role">5G Application Operations Engineer</span>
+          <span class="company-years">2024 - Present</span>
+        </div>
+      </div>
+      <div class="company-logo-item">
+        <img src="/static/assets/dialexa-logo.png" alt="Dialexa an IBM Company" class="company-logo">
+        <div class="company-info">
+          <span class="company-role">Product Engineer Intern</span>
+          <span class="company-years">2023</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-actions">
+      <a href="/projects" hx-get="/projects" hx-target="#content" hx-swap="innerHTML" hx-push-url="true"
+        class="hero-cta">View My Work</a>
+
+      <div class="social-icons">
+        <a href="https://linkedin.com/in/reece-iriye" target="_blank" rel="noopener noreferrer" class="social-icon">
+          <img src="/static/assets/linkedin-logo.png" alt="LinkedIn" />
+        </a>
+        <a href="https://github.com/reece-iriye" target="_blank" rel="noopener noreferrer" class="social-icon">
+          <img src="/static/assets/github-logo.png" alt="GitHub" />
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="glow-bg"></div>
+    <div class="photo-container">
+      <img class="headshot" src="/static/assets/headshot-normal.png" alt="Reece Iriye - Platform Engineer" />
+    </div>
+    <div class="floating-element pink"></div>
+    <div class="floating-element teal"></div>
+    <div class="floating-element orange"></div>
+    <div class="floating-element light"></div>
+  </div>
 </section>
 {{end}}
