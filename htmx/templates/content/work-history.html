@@ -1,6 +1,41 @@
 {{define "Content"}}
-<section id="work-history">
-  <h2>Work History</h2>
-  <p>My professional journey and experience in software engineering.</p>
+<section class="work-history">
+  <div class="work-hero">
+    <h2 class="section-title">Work History</h2>
+  </div>
+
+  <!-- Timeline Section -->
+  <div class="timeline">
+    <div class="timeline-line"></div>
+
+    <!-- Verizon Experience -->
+    <div class="timeline-item left">
+      <div class="timeline-content">
+        <img src="/static/assets/verizon-logo.svg" alt="Verizon" class="company-logo">
+        <h3>5G Application DevOps Engineer</h3>
+        <span class="timeline-date">2024 - Present</span>
+        <ul class="accomplishments">
+          <li>Developed automation tools using Python and Go</li>
+          <li>Implemented observability solutions with Prometheus and Grafana</li>
+          <li>Managed infrastructure operations for high-volume traffic</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Dialexa Experience -->
+    <div class="timeline-item right">
+      <div class="timeline-content">
+        <img src="/static/assets/dialexa-logo.png" alt="Dialexa an IBM Company" class="company-logo">
+        <h3>Product Engineer Intern</h3>
+        <span class="timeline-date">2023</span>
+        <p>Contributed to product development and engineering projects</p>
+        <ul class="accomplishments">
+          <li>Worked on product development projects</li>
+          <li>Collaborated with cross-functional teams</li>
+          <li>Gained experience in product engineering</li>
+        </ul>
+      </div>
+    </div>
+  </div>
 </section>
 {{end}}

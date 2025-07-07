@@ -302,6 +302,7 @@ section p {
 }
 
 /* Floating elements around photo */
+/* Update existing floating elements to support images */
 .floating-element {
 	position: absolute;
 	border-radius: 50%;
@@ -311,221 +312,133 @@ section p {
 	border: 3px solid white;
 	box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 	z-index: 10;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
+.floating-element:hover {
+	transform: scale(1.1);
+	box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+}
 
-.floating-element.pink {
-	width: 4rem;
-	height: 4rem;
-	background-color: #ED4D6E;
+/* Tech stack specific colors and positioning */
+.floating-element.kubernetes {
+	width: 4.5rem;
+	height: 4.5rem;
+	background: #44A1A0;
 	top: 15%;
 	right: 5%;
 	animation-delay: 0s;
 }
 
-.floating-element.teal {
+.floating-element.go {
 	width: 4.5rem;
 	height: 4.5rem;
 	bottom: 20%;
-	background-color: #44A1A0;
+	background: #ED4D6E;
 	left: 5%;
 	animation-delay: 1s;
 }
 
-.floating-element.orange {
+.floating-element.python {
 	width: 3.8rem;
 	height: 3.8rem;
 	top: 35%;
 	left: 6%;
 	animation-delay: 2s;
-	background-color: #BB7D25;
+	background: #333;
 }
 
-.floating-element.light {
+.floating-element.gcp {
 	width: 4.2rem;
 	height: 4.2rem;
 	bottom: 35%;
 	right: 6%;
 	animation-delay: 3s;
-	background-color: #BB7D25;
+	background: #333;
 }
 
-/* === MEDIA CONTENT INSIDE BUBBLES === */
-.bubble-media {
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-	border-radius: 50%;
+/* Tech logo styling */
+.tech-logo {
+	width: 65%;
+	height: 65%;
+	object-fit: contain;
 	transition: transform 0.3s ease;
+	filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
-.bubble-video {
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-	border-radius: 50%;
+.floating-element:hover .tech-logo {
+	transform: scale(1.1);
 }
 
-/* === PLAY BUTTON OVERLAY FOR VIDEOS === */
-.play-overlay {
+/* Tooltip for tech stack */
+.floating-element::after {
+	content: attr(data-tooltip);
 	position: absolute;
-	top: 50%;
+	bottom: -40px;
 	left: 50%;
-	transform: translate(-50%, -50%);
-	width: 1.5rem;
-	height: 1.5rem;
-	background: rgba(255, 255, 255, 0.9);
-	border-radius: 50%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+	transform: translateX(-50%);
+	background: rgba(0, 0, 0, 0.8);
+	color: white;
+	padding: 8px 12px;
+	border-radius: 6px;
+	font-size: 12px;
+	font-weight: 600;
 	opacity: 0;
 	transition: opacity 0.3s ease;
 	pointer-events: none;
+	white-space: nowrap;
+	z-index: 1000;
 }
 
-.floating-element:hover .play-overlay {
+.floating-element:hover::after {
 	opacity: 1;
 }
 
-.play-button {
-	width: 0;
-	height: 0;
-	border-left: 0.6rem solid #333;
-	border-top: 0.4rem solid transparent;
-	border-bottom: 0.4rem solid transparent;
-	margin-left: 0.2rem;
-}
-
-/* === MODAL FOR EXPANDED VIEW === */
-.media-modal {
+/* Remove the old color classes since we're now using specific tech classes */
+.floating-element.pink,
+.floating-element.teal,
+.floating-element.orange,
+.floating-element.light {
 	display: none;
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background: rgba(0, 0, 0, 0.8);
-	z-index: 1000;
-	align-items: center;
-	justify-content: center;
 }
 
-.media-modal.active {
-	display: flex;
-}
-
-.modal-content {
-	position: relative;
-	max-width: 90%;
-	max-height: 90%;
-	background: white;
-	border-radius: 20px;
-	overflow: hidden;
-	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-}
-
-.modal-media {
-	width: 100%;
-	height: auto;
-	max-height: 80vh;
-	object-fit: contain;
-}
-
-.modal-close {
-	position: absolute;
-	top: 1rem;
-	right: 1rem;
-	background: rgba(0, 0, 0, 0.7);
-	color: white;
-	border: none;
-	width: 3rem;
-	height: 3rem;
-	border-radius: 50%;
-	cursor: pointer;
-	font-size: 1.5rem;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	transition: background 0.3s ease;
-	z-index: 1001;
-}
-
-.modal-close:hover {
-	background: rgba(0, 0, 0, 0.9);
-}
-
-.modal-caption {
-	padding: 1.5rem;
-	text-align: center;
-	background: white;
-}
-
-.modal-caption h3 {
-	margin-bottom: 0.5rem;
-	color: #333;
-	font-size: 1.4rem;
-}
-
-.modal-caption p {
-	color: #666;
-	font-size: 1rem;
-	margin-left: 0;
-}
-
-/* === RESPONSIVE UPDATES === */
+/* Responsive updates for tech logos */
 @media (max-width: 768px) {
-	.floating-element.pink {
+	.floating-element.kubernetes {
 		width: 3rem;
 		height: 3rem;
 		right: 8%;
 	}
 
-	.floating-element.teal {
+	.floating-element.go {
 		width: 3.5rem;
 		height: 3.5rem;
 		left: 8%;
 	}
 
-	.floating-element.orange {
+	.floating-element.python {
 		width: 2.8rem;
 		height: 2.8rem;
 		left: 10%;
 	}
 
-	.floating-element.light {
+	.floating-element.gcp {
 		width: 3.2rem;
 		height: 3.2rem;
 		right: 10%;
 	}
 
-	.play-overlay {
-		width: 1.2rem;
-		height: 1.2rem;
+	.tech-logo {
+		width: 60%;
+		height: 60%;
 	}
 
-	.play-button {
-		border-left: 0.4rem solid #333;
-		border-top: 0.3rem solid transparent;
-		border-bottom: 0.3rem solid transparent;
-		margin-left: 0.15rem;
-	}
-
-	.modal-content {
-		max-width: 95%;
-		max-height: 95%;
-	}
-
-	.modal-caption {
-		padding: 1rem;
-	}
-
-	.modal-caption h3 {
-		font-size: 1.2rem;
-	}
-
-	.modal-caption p {
-		font-size: 0.9rem;
+	.floating-element::after {
+		font-size: 10px;
+		padding: 6px 8px;
+		bottom: -35px;
 	}
 }
 
@@ -593,15 +506,15 @@ section p {
 
 	0%,
 	100% {
-		transform: translateY(0px) rotate(0deg);
+		transform: translateY(0px);
 	}
 
 	33% {
-		transform: translateY(-0.5rem) rotate(120deg);
+		transform: translateY(-0.5rem);
 	}
 
 	66% {
-		transform: translateY(0.3rem) rotate(240deg);
+		transform: translateY(0.3rem);
 	}
 }
 
@@ -731,4 +644,134 @@ footer {
 
 footer p {
 	margin: 0;
+}
+
+/* === WORK HISTORY === */
+.work-history {
+	padding: 4rem 2.5rem;
+	background: #F3DFC1;
+}
+
+.work-hero {
+	margin-bottom: 2rem;
+	text-align: center;
+}
+
+.section-title {
+	font-size: 2.5rem;
+	color: #333;
+	margin-bottom: 2rem;
+}
+
+.key-accomplishments {
+	max-width: 800px;
+	margin: 0 auto;
+	padding: 2rem;
+	background: white;
+	border-radius: 12px;
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.accomplishment-card {
+	animation: fadeInUp 0.8s ease-out;
+}
+
+.key-accomplishment {
+	margin: 1rem 0;
+	font-size: 1.1rem;
+	color: #555;
+}
+
+.timeline {
+	position: relative;
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 2rem 0;
+}
+
+.timeline-line {
+	position: absolute;
+	left: 50%;
+	top: 0;
+	bottom: 0;
+	width: 4px;
+	background: #ED4D6E;
+	transform: translateX(-50%);
+}
+
+.timeline-item {
+	width: 50%;
+	padding: 2rem;
+}
+
+.timeline-item.left {
+	left: 0;
+}
+
+.timeline-item.right {
+	right: 0;
+}
+
+.timeline-content {
+	background: white;
+	padding: 2rem;
+	border-radius: 12px;
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+	position: relative;
+	transition: transform 0.3s ease;
+}
+
+.timeline-content:hover {
+	transform: translateY(-5px);
+}
+
+.timeline-content::before {
+	content: '';
+	position: absolute;
+	width: 20px;
+	height: 20px;
+	background: #ED4D6E;
+	border-radius: 50%;
+	top: 2rem;
+	z-index: 1;
+}
+
+.timeline-item.left .timeline-content::before {
+	left: -10px;
+}
+
+.timeline-item.right .timeline-content::before {
+	right: -10px;
+}
+
+.company-logo {
+	height: 40px;
+	width: auto;
+	margin-bottom: 1rem;
+}
+
+.timeline-date {
+	display: block;
+	color: #ED4D6E;
+	font-size: 0.9rem;
+	margin-bottom: 1rem;
+}
+
+.accomplishments {
+	list-style: none;
+	margin-top: 1rem;
+	padding-left: 0;
+}
+
+.accomplishments li {
+	margin: 0.5rem 0;
+	padding-left: 1.5rem;
+	position: relative;
+}
+
+.accomplishments li::before {
+	content: '•';
+	position: absolute;
+	left: 0;
+	color: #ED4D6E;
 }

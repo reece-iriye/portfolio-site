@@ -16,13 +16,13 @@ func main() {
 		http.StripPrefix("/static/", http.FileServer(http.Dir("static"))),
 	)
 
-	mux.HandleFunc("GET /", homeHandler)
-	mux.HandleFunc("GET /home", homeHandler)
-	mux.HandleFunc("GET /work-history", workHandler)
-	mux.HandleFunc("GET /projects", projectsHandler)
-	mux.HandleFunc("GET /speaking-engagements", speakingHandler)
-	mux.HandleFunc("GET /metrics", metricsHandler)
-	mux.HandleFunc("GET /contact-me", contactHandler)
+	mux.HandleFunc("/", homeHandler)
+	mux.HandleFunc("/home", homeHandler)
+	mux.HandleFunc("/work-history", workHandler)
+	mux.HandleFunc("/projects", projectsHandler)
+	mux.HandleFunc("/speaking-engagements", speakingHandler)
+	mux.HandleFunc("/metrics", metricsHandler)
+	mux.HandleFunc("/contact-me", contactHandler)
 
 	fmt.Println("Server running on :8080")
 	if err := http.ListenAndServe(":8080", mux); err != nil {
@@ -53,25 +53,49 @@ func renderPage(w http.ResponseWriter, r *http.Request, page string, data interf
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		http.Error(w, "Invalid request method", http.StatusBadRequest)
+		return
+	}
 	renderPage(w, r, "home", nil)
 }
 
 func workHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		http.Error(w, "Invalid request method", http.StatusBadRequest)
+		return
+	}
 	renderPage(w, r, "work-history", nil)
 }
 
 func projectsHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		http.Error(w, "Invalid request method", http.StatusBadRequest)
+		return
+	}
 	renderPage(w, r, "projects", nil)
 }
 
 func speakingHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		http.Error(w, "Invalid request method", http.StatusBadRequest)
+		return
+	}
 	renderPage(w, r, "speaking-engagements", nil)
 }
 
 func metricsHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		http.Error(w, "Invalid request method", http.StatusBadRequest)
+		return
+	}
 	renderPage(w, r, "metrics", nil)
 }
 
 func contactHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		http.Error(w, "Invalid request method", http.StatusBadRequest)
+		return
+	}
 	renderPage(w, r, "contact-me", nil)
 }
