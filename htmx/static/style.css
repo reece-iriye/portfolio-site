@@ -560,7 +560,6 @@ section p {
 	position: relative;
 	overflow: hidden;
 	flex-shrink: 1;
-	/* Allow items to shrink */
 }
 
 .nav-list li a {
@@ -586,6 +585,27 @@ section p {
 	word-wrap: break-word;
 	hyphens: auto;
 	width: auto;
+}
+
+/* Special styling for the Grafana logo link */
+.nav-list li a.grafana-logo {
+	padding: 0.25rem 0.75rem;
+	border-radius: 0.75rem;
+}
+
+.nav-list li a.grafana-logo:hover {
+	background: rgba(255, 255, 255, 0.3) !important;
+}
+
+.grafana-logo-img {
+	height: 1.5rem;
+	width: auto;
+	filter: brightness(0) invert(1);
+	transition: all 0.3s ease;
+}
+
+.grafana-logo-img:hover {
+	filter: brightness(0) invert(1) drop-shadow(0 0 4px rgba(255, 255, 255, 0.5));
 }
 
 /* Shimmer effect on hover */
@@ -663,7 +683,10 @@ header {
 		padding: 0.4rem 0.75rem;
 		font-size: 1rem;
 		max-width: 6rem;
-		/* Smaller max-width for mobile */
+	}
+
+	.grafana-logo-img {
+		height: 1.25rem;
 	}
 }
 
@@ -677,7 +700,10 @@ header {
 		padding: 0.375rem 0.625rem;
 		font-size: 0.9375rem;
 		max-width: 5rem;
-		/* Even smaller for very small screens */
+	}
+
+	.grafana-logo-img {
+		height: 1rem;
 	}
 }
 
