@@ -13,9 +13,15 @@ body {
 
 /* === HEADER === */
 header {
-	position: relative;
+	position: sticky;
+	top: 0;
+	z-index: 1000;
+	background: transparent;
+	transition: all 0.3s ease;
 	width: 100%;
 	padding: 1rem 0 0;
+	backdrop-filter: blur(15px) saturate(1.2);
+	background: rgba(243, 223, 193, 0.6);
 }
 
 .header-content {
@@ -649,16 +655,8 @@ section p {
 	to {
 		opacity: 1;
 		transform: translateY(0);
+		/* Sticky header for all pages */
 	}
-}
-
-/* Sticky header for all pages */
-header {
-	position: sticky;
-	top: 0;
-	z-index: 1000;
-	background: #F3DFC1;
-	transition: all 0.3s ease;
 }
 
 /* Hide logo on mobile */
