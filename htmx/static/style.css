@@ -15,7 +15,7 @@ body {
 header {
 	position: relative;
 	width: 100%;
-	padding: 1.25rem 0 0;
+	padding: 1rem 0 0;
 }
 
 .header-content {
@@ -544,7 +544,6 @@ section p {
 }
 
 .nav-wrapper:hover {
-	transform: translateY(-2px);
 	box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
 }
 
@@ -560,20 +559,33 @@ section p {
 .nav-list li {
 	position: relative;
 	overflow: hidden;
+	flex-shrink: 1;
+	/* Allow items to shrink */
 }
 
 .nav-list li a {
 	color: white;
 	text-decoration: none;
 	font-weight: 600;
-	font-size: 1rem;
-	padding: 0.625rem 1.25rem;
-	border-radius: 2rem;
+	font-size: 1.125rem;
+	padding: 0.125rem 0.875rem;
+	border-radius: 1rem;
 	transition: all 0.3s ease;
 	position: relative;
-	display: block;
+	display: inline-flex;
+	align-items: center;
+	text-align: center;
+	vertical-align: middle;
+	justify-content: center;
+	min-height: 1.5rem;
 	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 	overflow: hidden;
+	line-height: 1.2;
+	max-width: 10rem;
+	white-space: normal;
+	word-wrap: break-word;
+	hyphens: auto;
+	width: auto;
 }
 
 /* Shimmer effect on hover */
@@ -584,8 +596,9 @@ section p {
 	left: -100%;
 	width: 100%;
 	height: 100%;
-	background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+	background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
 	transition: left 0.5s ease;
+	z-index: 1;
 }
 
 .nav-list li a:hover::before {
@@ -594,20 +607,16 @@ section p {
 
 .nav-list li a:hover {
 	background: rgba(255, 255, 255, 0.25) !important;
-	transform: translateY(-1px);
-	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .nav-list li a.active {
 	background: rgba(255, 255, 255, 0.3) !important;
-	transform: translateY(-1px);
 	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 /* Focus state for accessibility */
 .nav-list li a:focus {
-	outline: none;
-	box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+	background: rgba(255, 255, 255, 0.15) !important;
 }
 
 /* Entrance animation */
@@ -651,8 +660,10 @@ header {
 	}
 
 	.nav-list li a {
-		padding: 0.5rem 0.875rem;
-		font-size: 0.9rem;
+		padding: 0.4rem 0.75rem;
+		font-size: 1rem;
+		max-width: 6rem;
+		/* Smaller max-width for mobile */
 	}
 }
 
@@ -663,8 +674,10 @@ header {
 	}
 
 	.nav-list li a {
-		padding: 0.4rem 0.75rem;
-		font-size: 0.85rem;
+		padding: 0.375rem 0.625rem;
+		font-size: 0.9375rem;
+		max-width: 5rem;
+		/* Even smaller for very small screens */
 	}
 }
 
