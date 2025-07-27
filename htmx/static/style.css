@@ -1135,3 +1135,281 @@ footer p {
 		font-size: 1.5rem;
 	}
 }
+
+/* === TIMELINE PHOTO NODES (EMERGING FROM CENTER LINE) === */
+
+/* Photo nodes positioned along the timeline */
+.timeline-photo-node {
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 280px;
+	height: 200px;
+	z-index: 10;
+	opacity: 0;
+	animation: emergeFromTimeline 1s ease-out forwards;
+}
+
+/* Position nodes at specific points along timeline */
+.timeline-photo-node[data-position="25%"] {
+	top: 25%;
+	animation-delay: 1.5s;
+}
+
+.timeline-photo-node[data-position="60%"] {
+	top: 60%;
+	animation-delay: 2.8s;
+}
+
+.timeline-photo-node[data-position="85%"] {
+	top: 85%;
+	animation-delay: 4.1s;
+}
+
+/* Direction-specific positioning and animation */
+.right-emerge {
+	animation-name: emergeRight;
+}
+
+.left-emerge {
+	animation-name: emergeLeft;
+}
+
+/* Photo frame styling */
+.photo-frame {
+	width: 100%;
+	height: 100%;
+	border-radius: 12px;
+	padding: 8px;
+	box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+	transition: all 0.3s ease;
+	position: relative;
+	overflow: hidden;
+	border: 3px solid white;
+}
+
+/* Frame color variants */
+.pink-frame {
+	background: #ED4D6E;
+}
+
+.teal-frame {
+	background: #44A1A0;
+}
+
+/* Photo styling */
+.timeline-photo {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	border-radius: 6px;
+	transition: transform 0.3s ease;
+}
+
+/* Central connection dot */
+.timeline-photo-node::before {
+	content: '';
+	position: absolute;
+	width: 16px;
+	height: 16px;
+	background: white;
+	border: 4px solid #ED4D6E;
+	border-radius: 50%;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 15;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Connection line from center to photo */
+.timeline-photo-node::after {
+	content: '';
+	position: absolute;
+	top: 50%;
+	height: 3px;
+	background: linear-gradient(90deg, #ED4D6E, transparent);
+	transform: translateY(-50%);
+	z-index: 5;
+	opacity: 0;
+	animation: drawConnectionLine 0.5s ease-out forwards;
+}
+
+/* Connection line positioning */
+.right-emerge::after {
+	left: 50%;
+	width: 140px;
+	animation-delay: calc(var(--emerge-delay, 1.5s) + 0.3s);
+}
+
+.left-emerge::after {
+	right: 50%;
+	width: 140px;
+	background: linear-gradient(-90deg, #44A1A0, transparent);
+	animation-delay: calc(var(--emerge-delay, 2.8s) + 0.3s);
+}
+
+/* Hover effects */
+.photo-frame:hover {
+	transform: scale(1.08);
+	box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+}
+
+.photo-frame:hover .timeline-photo {
+	transform: scale(1.1);
+}
+
+/* Hover effect on the connecting dot */
+.timeline-photo-node:hover::before {
+	transform: translate(-50%, -50%) scale(1.2);
+	border-color: #44A1A0;
+}
+
+/* === ANIMATIONS === */
+
+/* Emerge from right side of timeline */
+@keyframes emergeRight {
+	0% {
+		opacity: 0;
+		transform: translateX(-50%) scale(0.3);
+	}
+
+	50% {
+		opacity: 0.7;
+		transform: translateX(-50%) scale(0.8);
+	}
+
+	100% {
+		opacity: 1;
+		transform: translateX(calc(-50% + 140px)) scale(1);
+	}
+}
+
+/* Emerge from left side of timeline */
+@keyframes emergeLeft {
+	0% {
+		opacity: 0;
+		transform: translateX(-50%) scale(0.3);
+	}
+
+	50% {
+		opacity: 0.7;
+		transform: translateX(-50%) scale(0.8);
+	}
+
+	100% {
+		opacity: 1;
+		transform: translateX(calc(-50% - 140px)) scale(1);
+	}
+}
+
+/* Connection line drawing animation */
+@keyframes drawConnectionLine {
+	from {
+		opacity: 0;
+		width: 0;
+	}
+
+	to {
+		opacity: 0.6;
+		width: 140px;
+	}
+}
+
+/* Set CSS custom properties for animation delays */
+.timeline-photo-node[data-position="25%"] {
+	--emerge-delay: 1.5s;
+}
+
+.timeline-photo-node[data-position="60%"] {
+	--emerge-delay: 2.8s;
+}
+
+.timeline-photo-node[data-position="85%"] {
+	--emerge-delay: 4.1s;
+}
+
+.timeline-photo-node[data-position="60%"]::after {
+	animation-delay: calc(2.8s + 0.3s);
+}
+
+.timeline-photo-node[data-position="85%"]::after {
+	animation-delay: calc(4.1s + 0.3s);
+}
+
+/* Update timeline container to accommodate photos */
+.timeline {
+	position: relative;
+	max-width: 1400px;
+	/* Increased width for photos */
+	margin: 0 auto;
+	padding: 2rem 0;
+	min-height: 800px;
+	/* Ensure enough height for positioned photos */
+}
+
+/* === RESPONSIVE DESIGN === */
+@media (max-width: 1200px) {
+	.timeline {
+		max-width: 1000px;
+	}
+
+	.timeline-photo-node {
+		width: 240px;
+		height: 170px;
+	}
+
+	.right-emerge::after,
+	.left-emerge::after {
+		width: 120px;
+	}
+
+	@keyframes emergeRight {
+		100% {
+			transform: translateX(calc(-50% + 120px)) scale(1);
+		}
+	}
+
+	@keyframes emergeLeft {
+		100% {
+			transform: translateX(calc(-50% - 120px)) scale(1);
+		}
+	}
+}
+
+@media (max-width: 768px) {
+	.timeline-photo-node {
+		width: 200px;
+		height: 140px;
+		position: relative;
+		left: 0;
+		transform: none;
+		margin: 2rem auto;
+		display: block;
+	}
+
+	.timeline-photo-node::after {
+		display: none;
+	}
+
+	.right-emerge,
+	.left-emerge {
+		animation-name: fadeInMobile;
+	}
+
+	@keyframes fadeInMobile {
+		from {
+			opacity: 0;
+			transform: scale(0.8);
+		}
+
+		to {
+			opacity: 1;
+			transform: scale(1);
+		}
+	}
+
+	.timeline {
+		min-height: auto;
+	}
+}

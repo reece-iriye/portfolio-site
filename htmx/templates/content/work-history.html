@@ -1,4 +1,4 @@
-{{define "Content"}}
+{{ define "Content" }}
 <section class="work-history">
   <div class="work-hero">
     <h3 class="section-title">Work History</h3>
@@ -15,15 +15,13 @@
         <h3>Network Engineer I - 5G/4G Core Operations</h3>
         <span class="timeline-date">Jun 2024 - Present</span>
         <ul class="accomplishments">
-          <li>Own SRE & DevOps for Verizon’s 5G Core Service Communication Proxy (SCP) & Network Repository Function
-            (NRF)—Kubernetes/Openshift-native NF’s processing 40M+ subscriber devices and 1 billion peak req/hr across
+          <li>Own SRE & DevOps for Verizon's 5G Core Service Communication Proxy (SCP) & Network Repository Function
+            (NRF)—Kubernetes/Openshift-native NF's processing 40M+ subscriber devices and 1 billion peak req/hr across
             U.S.</li>
           <li>Overtook leadership responsibilities for 2 Distinguished Engineers who left the team to take over SCP &
-            NRF,
-            maintaining 100% application uptime and staying on-schedule with 6 major projects</li>
+            NRF, maintaining 100% application uptime and staying on-schedule with 6 major projects</li>
           <li>Triage 1–3 5G downtime incidents weekly using Kubernetes-level Grafana, Prometheus, and Istio telemetry
-            via
-            SCP to summarize 5G Core traffic trends and direct performance & operations teams to root cause</li>
+            via SCP to summarize 5G Core traffic trends and direct performance & operations teams to root cause</li>
           <li>Designed and implementing on-prem Kubernetes multi-cluster SCP capacity scaling framework to enable 500%
             traffic growth while improving debugging and traceability by partitioning traffic by ingress-traffic type
           </li>
@@ -32,7 +30,7 @@
           <li>Built Python tool to identify 1,000+ legacy 4G routing misconfigs, stopping outage scenarios valued around
             $200k each</li>
           <li>Manage Layer 7 networking for SCP & NRF with Istio service mesh, automating process with Python to add new
-            FQDN’s to service mesh manifests—cutting ~4 hours off error-prone manual process building Kubernetes CRD
+            FQDN's to service mesh manifests—cutting ~4 hours off error-prone manual process building Kubernetes CRD
             manifests</li>
           <li>Created Grafana and Kibana dashboards for SCP/NRF OpenShift applications to surface ingress traffic by
             client, reducing triage time by 30% and informing org-wide capacity planning</li>
@@ -42,6 +40,13 @@
             Resident Engineers and interns on 5G Core platform operations, maintenance windows, and incident response
             best practices</li>
         </ul>
+      </div>
+    </div>
+
+    <!-- Timeline Photo 1 - Emerges from timeline line to the right -->
+    <div class="timeline-photo-node right-emerge" data-position="25%">
+      <div class="photo-frame pink-frame">
+        <img src="/static/assets/networking-conference.jpg" alt="Tech conference networking" class="timeline-photo">
       </div>
     </div>
 
@@ -59,6 +64,33 @@
         </ul>
       </div>
     </div>
+
+    <!-- Timeline Photo 2 - Emerges from timeline line to the left -->
+    <div class="timeline-photo-node left-emerge" data-position="60%">
+      <div class="photo-frame teal-frame">
+        <img src="/static/assets/team-collaboration.jpg" alt="Team collaboration session" class="timeline-photo">
+      </div>
+    </div>
+
+    <!-- Example of additional timeline item -->
+    <div class="timeline-item left">
+      <div class="timeline-content">
+        <img src="/static/assets/company-logo.svg" alt="Company" class="company-logo">
+        <h3>Previous Role Title</h3>
+        <span class="timeline-date">Date Range</span>
+        <ul class="accomplishments">
+          <li>Accomplishment example</li>
+          <li>Another accomplishment</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Timeline Photo 3 - Emerges from timeline line to the right -->
+    <div class="timeline-photo-node right-emerge" data-position="85%">
+      <div class="photo-frame pink-frame">
+        <img src="/static/assets/meetup-presentation.jpg" alt="Meetup presentation" class="timeline-photo">
+      </div>
+    </div>
   </div>
 </section>
-{{end}}
+{{ end }}
