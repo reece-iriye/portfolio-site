@@ -19,8 +19,8 @@ func main() {
 	mux.HandleFunc("/", homeHandler)
 	mux.HandleFunc("/home", homeHandler)
 	mux.HandleFunc("/work-history", workHandler)
-	mux.HandleFunc("/projects", projectsHandler)
-	mux.HandleFunc("/speaking-engagements", speakingHandler)
+	// mux.HandleFunc("/projects", projectsHandler)
+	// mux.HandleFunc("/speaking-engagements", speakingHandler)
 	mux.HandleFunc("/metrics", metricsHandler)
 	mux.HandleFunc("/contact-me", contactHandler)
 
