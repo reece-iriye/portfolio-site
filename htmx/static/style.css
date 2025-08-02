@@ -824,7 +824,7 @@ footer p {
 }
 
 .work-hero {
-	margin-bottom: 1rem;
+	margin-bottom: 3rem;
 	text-align: center;
 }
 
@@ -836,125 +836,157 @@ footer p {
 	animation: fadeInUp 0.8s ease-out 0.2s forwards;
 }
 
-.key-accomplishments {
-	max-width: 800px;
-	margin: 0 auto;
-	padding: 2rem;
-	background: white;
-	border-radius: 12px;
-	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.accomplishment-card {
-	opacity: 0;
-	animation: fadeInUp 0.8s ease-out forwards;
-	animation-fill-mode: both;
-	animation-iteration-count: 1;
-}
-
-/* Sequential one-at-a-time animation for accomplishment cards - after timeline */
-.accomplishment-card:nth-child(1) {
-	animation-delay: 2.0s;
-}
-
-.accomplishment-card:nth-child(2) {
-	animation-delay: 4.4s;
-}
-
-.accomplishment-card:nth-child(3) {
-	animation-delay: 4.8s;
-}
-
-.accomplishment-card:nth-child(4) {
-	animation-delay: 5.2s;
-}
-
-.accomplishment-card:nth-child(5) {
-	animation-delay: 5.6s;
-}
-
-.accomplishment-card:nth-child(6) {
-	animation-delay: 6.0s;
-}
-
-.accomplishment-card:nth-child(7) {
-	animation-delay: 6.4s;
-}
-
-.accomplishment-card:nth-child(8) {
-	animation-delay: 6.8s;
-}
-
-.key-accomplishment {
-	margin: 1rem 0;
-	font-size: 1.1rem;
-	color: #555;
-}
-
+/* Main timeline container */
 .timeline {
 	position: relative;
-	max-width: 1200px;
+	max-width: 1400px;
 	margin: 0 auto;
 	padding: 2rem 0;
+	display: grid;
+	grid-template-columns: 300px 1fr;
+	gap: 4rem;
+	align-items: start;
+}
+
+/* Left side photo container */
+.timeline-photos {
+	display: flex;
+	flex-direction: column;
+	gap: 6rem;
+	padding-top: 2rem;
+}
+
+/* Individual photo containers */
+.timeline-photo-container {
+	width: 280px;
+	height: 200px;
+	opacity: 0;
+	transform: translateX(-30px);
+	animation: slideInLeft 0.8s ease-out forwards;
+}
+
+/* Sync photo animations with corresponding timeline items */
+.timeline-photo-container:nth-child(1) {
+	animation-delay: 0.8s;
+	/* Same as first timeline item */
+}
+
+.timeline-photo-container:nth-child(2) {
+	animation-delay: 1.1s;
+	/* Same as second timeline item */
+}
+
+.timeline-photo-container:nth-child(3) {
+	animation-delay: 1.5s;
+	/* Same as third timeline item */
+}
+
+.timeline-photo-container:nth-child(4) {
+	animation-delay: 1.7s;
+	/* Same as fourth timeline item */
+}
+
+.timeline-photo-container:nth-child(5) {
+	animation-delay: 2.0s;
+	/* Same as fifth timeline item */
+}
+
+.timeline-photo-container:nth-child(6) {
+	animation-delay: 2.3s;
+	/* Same as sixth timeline item */
+}
+
+/* Photo frame styling */
+.photo-frame {
+	width: 100%;
+	height: 100%;
+	border-radius: 12px;
+	padding: 8px;
+	box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+	transition: all 0.3s ease;
+	position: relative;
+	overflow: hidden;
+	border: 3px solid white;
+}
+
+.pink-frame {
+	background: #ED4D6E;
+}
+
+.teal-frame {
+	background: #44A1A0;
+}
+
+.orange-frame {
+	background: #BB7D25;
+}
+
+.timeline-photo {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	border-radius: 6px;
+	transition: transform 0.3s ease;
+}
+
+.photo-frame:hover {
+	transform: scale(1.05);
+	box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+}
+
+.photo-frame:hover .timeline-photo {
+	transform: scale(1.1);
+}
+
+/* Right side timeline content */
+.timeline-content-area {
+	position: relative;
 }
 
 .timeline-line {
 	position: absolute;
-	left: 50%;
+	left: 0;
 	top: 0;
 	bottom: 0;
 	width: 4px;
 	background: #ED4D6E;
-	transform: translateX(-50%);
 	opacity: 0;
 	animation: slideInLine 1s ease-out 0.5s forwards;
 }
 
-/* Enhanced CSS-only approach with page-load animations */
 .timeline-item {
 	position: relative;
-	width: 45%;
-	padding: 2rem;
+	margin-left: 3rem;
+	margin-bottom: 4rem;
 	opacity: 0;
-	transform: translateX(-50px);
-	animation: slideInTimeline 0.8s ease-out forwards;
-	animation-fill-mode: both;
-	animation-iteration-count: 1;
-}
-
-/* Left side items */
-.timeline-item:nth-child(odd) {
-	left: 0;
-	transform: translateX(-50px);
-	animation-delay: calc(0.8s + var(--item-index, 0) * 0.3s);
-}
-
-/* Right side items */
-.timeline-item:nth-child(even) {
-	left: 55%;
 	transform: translateX(50px);
-	animation-delay: calc(0.8s + var(--item-index, 0) * 0.3s);
+	animation: slideInRight 0.8s ease-out forwards;
 }
 
-/* Specific delays for each item */
+/* Sync timeline item animations */
 .timeline-item:nth-child(2) {
-	--item-index: 1;
+	/* Skip timeline-line which is first child */
+	animation-delay: 0.8s;
 }
 
 .timeline-item:nth-child(3) {
-	--item-index: 2;
+	animation-delay: 1.1s;
 }
 
 .timeline-item:nth-child(4) {
-	--item-index: 3;
+	animation-delay: 1.4s;
 }
 
 .timeline-item:nth-child(5) {
-	--item-index: 4;
+	animation-delay: 1.7s;
 }
 
 .timeline-item:nth-child(6) {
-	--item-index: 5;
+	animation-delay: 2.0s;
+}
+
+.timeline-item:nth-child(7) {
+	animation-delay: 2.3s;
 }
 
 .timeline-content {
@@ -981,19 +1013,9 @@ footer p {
 	border: 4px solid white;
 	border-radius: 50%;
 	top: 30%;
-	/* Start 30% from the top */
+	left: -44px;
 	z-index: 2;
 	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-}
-
-/* Left side dots */
-.timeline-item:nth-child(odd) .timeline-content::before {
-	right: -0.75rem;
-}
-
-/* Right side dots */
-.timeline-item:nth-child(even) .timeline-content::before {
-	left: -0.75rem;
 }
 
 .company-logo {
@@ -1019,12 +1041,6 @@ footer p {
 	color: #333;
 	margin-bottom: 0.5rem;
 	font-size: 1.4rem;
-}
-
-.timeline-content p {
-	color: #555;
-	margin-bottom: 1rem;
-	line-height: 1.6;
 }
 
 .accomplishments {
@@ -1063,10 +1079,10 @@ footer p {
 	}
 }
 
-@keyframes slideInTimeline {
+@keyframes slideInLeft {
 	from {
 		opacity: 0;
-		transform: translateX(var(--slide-direction, -50px));
+		transform: translateX(-30px);
 	}
 
 	to {
@@ -1075,56 +1091,77 @@ footer p {
 	}
 }
 
-/* Sequential one-at-a-time animation with permanent appearance */
-.timeline-item:nth-child(2) {
-	animation-delay: calc(0.4s + 0.4s);
+@keyframes slideInRight {
+	from {
+		opacity: 0;
+		transform: translateX(50px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
 }
 
-.timeline-item:nth-child(3) {
-	animation-delay: calc(0.4s + 0.7s);
-}
+@keyframes fadeInUp {
+	from {
+		opacity: 0;
+		transform: translateY(30px);
+	}
 
-.timeline-item:nth-child(4) {
-	animation-delay: calc(0.4s + 1.1s);
-}
-
-.timeline-item:nth-child(5) {
-	animation-delay: calc(0.4s + 1.4s);
-}
-
-.timeline-item:nth-child(6) {
-	animation-delay: calc(0.4s + 1.7s);
-}
-
-.timeline-item:nth-child(7) {
-	animation-delay: calc(0.4s + 2.0s);
-}
-
-.timeline-item:nth-child(8) {
-	animation-delay: calc(0.4s + 2.3s);
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
 
 /* Responsive design */
+@media (max-width: 1200px) {
+	.timeline {
+		grid-template-columns: 250px 1fr;
+		gap: 3rem;
+	}
+
+	.timeline-photo-container {
+		width: 240px;
+		height: 170px;
+	}
+}
+
 @media (max-width: 768px) {
+	.timeline {
+		grid-template-columns: 1fr;
+		gap: 2rem;
+	}
+
+	.timeline-photos {
+		order: 2;
+		flex-direction: row;
+		overflow-x: auto;
+		gap: 2rem;
+		padding: 1rem 0;
+	}
+
+	.timeline-photo-container {
+		flex-shrink: 0;
+		width: 200px;
+		height: 140px;
+	}
+
+	.timeline-content-area {
+		order: 1;
+	}
+
 	.timeline-line {
 		left: 30px;
 	}
 
 	.timeline-item {
-		width: 100%;
-		left: 70px !important;
-		padding: 1rem;
-	}
-
-	.timeline-item:nth-child(odd),
-	.timeline-item:nth-child(even) {
-		left: 70px;
-		transform: translateX(-50px);
+		margin-left: 70px;
 	}
 
 	.timeline-content::before {
-		left: -42px !important;
-		right: auto !important;
+		left: -82px;
 	}
 
 	.timeline-content {
@@ -1136,280 +1173,13 @@ footer p {
 	}
 }
 
-/* === TIMELINE PHOTO NODES (EMERGING FROM CENTER LINE) === */
-
-/* Photo nodes positioned along the timeline */
-.timeline-photo-node {
-	position: absolute;
-	left: 50%;
-	transform: translateX(-50%);
-	width: 280px;
-	height: 200px;
-	z-index: 10;
-	opacity: 0;
-	animation: emergeFromTimeline 1s ease-out forwards;
-}
-
-/* Position nodes at specific points along timeline */
-.timeline-photo-node[data-position="25%"] {
-	top: 25%;
-	animation-delay: 1.5s;
-}
-
-.timeline-photo-node[data-position="60%"] {
-	top: 60%;
-	animation-delay: 2.8s;
-}
-
-.timeline-photo-node[data-position="85%"] {
-	top: 85%;
-	animation-delay: 4.1s;
-}
-
-/* Direction-specific positioning and animation */
-.right-emerge {
-	animation-name: emergeRight;
-}
-
-.left-emerge {
-	animation-name: emergeLeft;
-}
-
-/* Photo frame styling */
-.photo-frame {
-	width: 100%;
-	height: 100%;
-	border-radius: 12px;
-	padding: 8px;
-	box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-	transition: all 0.3s ease;
-	position: relative;
-	overflow: hidden;
-	border: 3px solid white;
-}
-
-/* Frame color variants */
-.pink-frame {
-	background: #ED4D6E;
-}
-
-.teal-frame {
-	background: #44A1A0;
-}
-
-/* Photo styling */
-.timeline-photo {
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-	border-radius: 6px;
-	transition: transform 0.3s ease;
-}
-
-/* Central connection dot */
-.timeline-photo-node::before {
-	content: '';
-	position: absolute;
-	width: 16px;
-	height: 16px;
-	background: white;
-	border: 4px solid #ED4D6E;
-	border-radius: 50%;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	z-index: 15;
-	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-}
-
-/* Connection line from center to photo */
-.timeline-photo-node::after {
-	content: '';
-	position: absolute;
-	top: 50%;
-	height: 3px;
-	background: linear-gradient(90deg, #ED4D6E, transparent);
-	transform: translateY(-50%);
-	z-index: 5;
-	opacity: 0;
-	animation: drawConnectionLine 0.5s ease-out forwards;
-}
-
-/* Connection line positioning */
-.right-emerge::after {
-	left: 50%;
-	width: 140px;
-	animation-delay: calc(var(--emerge-delay, 1.5s) + 0.3s);
-}
-
-.left-emerge::after {
-	right: 50%;
-	width: 140px;
-	background: linear-gradient(-90deg, #44A1A0, transparent);
-	animation-delay: calc(var(--emerge-delay, 2.8s) + 0.3s);
-}
-
-/* Hover effects */
-.photo-frame:hover {
-	transform: scale(1.08);
-	box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
-}
-
-.photo-frame:hover .timeline-photo {
-	transform: scale(1.1);
-}
-
-/* Hover effect on the connecting dot */
-.timeline-photo-node:hover::before {
-	transform: translate(-50%, -50%) scale(1.2);
-	border-color: #44A1A0;
-}
-
-/* === ANIMATIONS === */
-
-/* Emerge from right side of timeline */
-@keyframes emergeRight {
-	0% {
-		opacity: 0;
-		transform: translateX(-50%) scale(0.3);
+@media (max-width: 480px) {
+	.timeline-photos {
+		justify-content: center;
 	}
 
-	50% {
-		opacity: 0.7;
-		transform: translateX(-50%) scale(0.8);
-	}
-
-	100% {
-		opacity: 1;
-		transform: translateX(calc(-50% + 140px)) scale(1);
-	}
-}
-
-/* Emerge from left side of timeline */
-@keyframes emergeLeft {
-	0% {
-		opacity: 0;
-		transform: translateX(-50%) scale(0.3);
-	}
-
-	50% {
-		opacity: 0.7;
-		transform: translateX(-50%) scale(0.8);
-	}
-
-	100% {
-		opacity: 1;
-		transform: translateX(calc(-50% - 140px)) scale(1);
-	}
-}
-
-/* Connection line drawing animation */
-@keyframes drawConnectionLine {
-	from {
-		opacity: 0;
-		width: 0;
-	}
-
-	to {
-		opacity: 0.6;
-		width: 140px;
-	}
-}
-
-/* Set CSS custom properties for animation delays */
-.timeline-photo-node[data-position="25%"] {
-	--emerge-delay: 1.5s;
-}
-
-.timeline-photo-node[data-position="60%"] {
-	--emerge-delay: 2.8s;
-}
-
-.timeline-photo-node[data-position="85%"] {
-	--emerge-delay: 4.1s;
-}
-
-.timeline-photo-node[data-position="60%"]::after {
-	animation-delay: calc(2.8s + 0.3s);
-}
-
-.timeline-photo-node[data-position="85%"]::after {
-	animation-delay: calc(4.1s + 0.3s);
-}
-
-/* Update timeline container to accommodate photos */
-.timeline {
-	position: relative;
-	max-width: 1400px;
-	/* Increased width for photos */
-	margin: 0 auto;
-	padding: 2rem 0;
-	min-height: 800px;
-	/* Ensure enough height for positioned photos */
-}
-
-/* === RESPONSIVE DESIGN === */
-@media (max-width: 1200px) {
-	.timeline {
-		max-width: 1000px;
-	}
-
-	.timeline-photo-node {
-		width: 240px;
-		height: 170px;
-	}
-
-	.right-emerge::after,
-	.left-emerge::after {
-		width: 120px;
-	}
-
-	@keyframes emergeRight {
-		100% {
-			transform: translateX(calc(-50% + 120px)) scale(1);
-		}
-	}
-
-	@keyframes emergeLeft {
-		100% {
-			transform: translateX(calc(-50% - 120px)) scale(1);
-		}
-	}
-}
-
-@media (max-width: 768px) {
-	.timeline-photo-node {
-		width: 200px;
-		height: 140px;
-		position: relative;
-		left: 0;
-		transform: none;
-		margin: 2rem auto;
-		display: block;
-	}
-
-	.timeline-photo-node::after {
-		display: none;
-	}
-
-	.right-emerge,
-	.left-emerge {
-		animation-name: fadeInMobile;
-	}
-
-	@keyframes fadeInMobile {
-		from {
-			opacity: 0;
-			transform: scale(0.8);
-		}
-
-		to {
-			opacity: 1;
-			transform: scale(1);
-		}
-	}
-
-	.timeline {
-		min-height: auto;
+	.timeline-photo-container {
+		width: 180px;
+		height: 120px;
 	}
 }
