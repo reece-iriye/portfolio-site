@@ -1183,3 +1183,260 @@ footer p {
 		height: 120px;
 	}
 }
+
+
+/* === CONTACT ME PAGE === */
+.contact-me {
+	padding: 2rem 1rem;
+	background: #F3DFC1;
+	min-height: 70vh;
+}
+
+.contact-hero {
+	text-align: center;
+	margin-bottom: 3rem;
+}
+
+.section-title {
+	font-size: 2rem;
+	color: #333;
+	margin-bottom: 1rem;
+	opacity: 0;
+	animation: fadeInUp 0.8s ease-out 0.2s forwards;
+}
+
+.contact-description {
+	font-size: 1.25rem;
+	color: #555;
+	max-width: 600px;
+	margin: 0 auto;
+	opacity: 0;
+	animation: fadeInUp 0.8s ease-out 0.4s forwards;
+}
+
+.contact-form-container {
+	max-width: 700px;
+	margin: 0 auto;
+	background: white;
+	border-radius: 12px;
+	box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+	padding: 3rem;
+	opacity: 0;
+	animation: fadeInUp 0.8s ease-out 0.6s forwards;
+}
+
+.contact-form {
+	display: flex;
+	flex-direction: column;
+	gap: 2rem;
+}
+
+.form-group {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.form-label {
+	font-weight: 600;
+	color: #333;
+	font-size: 1rem;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+	padding: 1rem;
+	border: 2px solid #e0e0e0;
+	border-radius: 8px;
+	font-size: 1rem;
+	font-family: 'Ubuntu', sans-serif;
+	transition: all 0.3s ease;
+	background: white;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+	outline: none;
+	border-color: #ED4D6E;
+	box-shadow: 0 0 0 3px rgba(237, 77, 110, 0.1);
+}
+
+.form-select {
+	cursor: pointer;
+	background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+	background-position: right 0.75rem center;
+	background-repeat: no-repeat;
+	background-size: 1rem;
+	padding-right: 2.5rem;
+}
+
+.form-textarea {
+	resize: vertical;
+	min-height: 120px;
+	font-family: 'Ubuntu', sans-serif;
+}
+
+.form-actions {
+	margin-top: 1rem;
+}
+
+.submit-btn {
+	background: linear-gradient(135deg, #ED4D6E, #BB7D25);
+	color: white;
+	border: none;
+	padding: 1rem 2.5rem;
+	border-radius: 50px;
+	font-size: 1.1rem;
+	font-weight: 700;
+	font-family: 'Ubuntu', sans-serif;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	position: relative;
+	overflow: hidden;
+	min-width: 200px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+}
+
+.submit-btn:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 25px rgba(237, 77, 110, 0.3);
+}
+
+.submit-btn:active {
+	transform: translateY(0);
+}
+
+.submit-btn:disabled {
+	opacity: 0.7;
+	cursor: not-allowed;
+	transform: none;
+}
+
+.btn-loading {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.loading-spinner {
+	width: 1rem;
+	height: 1rem;
+	border: 2px solid rgba(255, 255, 255, 0.3);
+	border-radius: 50%;
+	border-top-color: white;
+	animation: spin 1s linear infinite;
+}
+
+.form-response {
+	margin-top: 1rem;
+	padding: 1rem;
+	border-radius: 8px;
+	text-align: center;
+	font-weight: 600;
+}
+
+.form-response.success {
+	background: #d4edda;
+	color: #155724;
+	border: 1px solid #c3e6cb;
+}
+
+.form-response.error {
+	background: #f8d7da;
+	color: #721c24;
+	border: 1px solid #f5c6cb;
+}
+
+/* Input validation styling */
+.form-input:invalid:not(:placeholder-shown),
+.form-select:invalid,
+.form-textarea:invalid:not(:placeholder-shown) {
+	border-color: #e74c3c;
+}
+
+.form-input:valid,
+.form-select:valid,
+.form-textarea:valid {
+	border-color: #27ae60;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+	from {
+		opacity: 0;
+		transform: translateY(30px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+	.contact-me {
+		padding: 2rem 1.5rem;
+	}
+
+	.contact-form-container {
+		padding: 2rem;
+	}
+
+	.section-title {
+		font-size: 1.75rem;
+	}
+
+	.contact-description {
+		font-size: 1.1rem;
+	}
+
+	.form-input,
+	.form-select,
+	.form-textarea {
+		font-size: 0.9rem;
+		padding: 0.875rem;
+	}
+
+	.submit-btn {
+		padding: 0.875rem 2rem;
+		font-size: 1rem;
+		min-width: 180px;
+	}
+}
+
+@media (max-width: 480px) {
+	.contact-form-container {
+		padding: 1.5rem;
+	}
+
+	.submit-btn {
+		width: 100%;
+	}
+}
+
+/* Focus accessibility */
+@media (prefers-reduced-motion: reduce) {
+
+	.section-title,
+	.contact-description,
+	.contact-form-container {
+		animation: none;
+		opacity: 1;
+	}
+
+	.loading-spinner {
+		animation: none;
+	}
+}

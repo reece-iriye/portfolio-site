@@ -1,6 +1,55 @@
 {{ define "Content" }}
-<section id="contact-me">
-  <h2>Contact Me</h2>
-  <p>Get in touch with me about opportunities and collaborations.</p>
+<section class="contact-me">
+  <div class="contact-hero">
+    <h2 class="section-title">Contact Me</h2>
+    <p class="contact-description">Get in touch with me about opportunities and collaborations.</p>
+  </div>
+
+  <div class="contact-form-container">
+    <form class="contact-form" method="POST" action="/contact" hx-post="/contact" hx-target="#form-response"
+      hx-swap="innerHTML">
+      <div class="form-group">
+        <label for="name" class="form-label">Name *</label>
+        <input type="text" id="name" name="name" class="form-input" required placeholder="Your full name">
+      </div>
+
+      <div class="form-group">
+        <label for="reason" class="form-label">Reason *</label>
+        <select id="reason" name="reason" class="form-select" required>
+          <option value="">Select a reason...</option>
+          <option value="opportunity">Opportunity</option>
+          <option value="collaboration">Collaboration</option>
+          <option value="networking">Networking</option>
+          <option value="consulting">Consulting</option>
+          <option value="speaking">Speaking</option>
+          <option value="mentoring">Mentoring</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="subject" class="form-label">Subject *</label>
+        <input type="text" id="subject" name="subject" class="form-input" required placeholder="Brief subject line">
+      </div>
+
+      <div class="form-group">
+        <label for="body" class="form-label">Message *</label>
+        <textarea id="body" name="body" class="form-textarea" required rows="8"
+          placeholder="Tell me more about what you'd like to discuss..."></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="submit-btn">
+          <span class="btn-text">Send Message</span>
+          <div class="btn-loading" style="display: none;">
+            <div class="loading-spinner"></div>
+            Sending...
+          </div>
+        </button>
+      </div>
+
+      <div id="form-response" class="form-response"></div>
+    </form>
+  </div>
 </section>
 {{ end }}
