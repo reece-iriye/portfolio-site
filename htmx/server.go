@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"net/smtp"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
+
+	"gopkg.in/gomail.v2"
 )
 
-// ContactFormData represents the form submission data
 type ContactFormData struct {
 	Name    string
 	Reason  string
@@ -111,14 +112,12 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 	renderPage(w, r, "contact-me", nil)
 }
 
-// New handler for contact form submission
 func contactSubmitHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
 	}
 
-	// Parse form data
 	err := r.ParseForm()
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -129,7 +128,6 @@ func contactSubmitHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Extract and validate form fields
 	formData := ContactFormData{
 		Name:    strings.TrimSpace(r.FormValue("name")),
 		Reason:  strings.TrimSpace(r.FormValue("reason")),
@@ -137,7 +135,6 @@ func contactSubmitHandler(w http.ResponseWriter, r *http.Request) {
 		Body:    strings.TrimSpace(r.FormValue("body")),
 	}
 
-	// Validate required fields
 	if formData.Name == "" || formData.Reason == "" || formData.Subject == "" ||
 		formData.Body == "" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -148,7 +145,6 @@ func contactSubmitHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Send email (you'll need to configure your SMTP settings)
 	err = sendContactEmail(formData)
 	if err != nil {
 		fmt.Printf("Error sending email: %v\n", err)
@@ -160,7 +156,6 @@ func contactSubmitHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Success response
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprint(
 		w,
@@ -168,26 +163,13 @@ func contactSubmitHandler(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
-// Email sending function - configure with your SMTP settings
 func sendContactEmail(data ContactFormData) error {
-	// Email configuration - set these as environment variables
-	smtpHost := os.Getenv("SMTP_HOST") // e.g., "smtp.gmail.com"
-	smtpPort := os.Getenv("SMTP_PORT") // e.g., "587"
-	smtpUser := os.Getenv("SMTP_USER") // your email
-	smtpPass := os.Getenv("SMTP_PASS") // your email password or app password
-	toEmail := os.Getenv("TO_EMAIL")   // where you want to receive contact emails
-
-	// If email not configured, just log the message (for development)
-	if smtpHost == "" || smtpPort == "" || smtpUser == "" || smtpPass == "" || toEmail == "" {
-		fmt.Printf("Contact form submission (email not configured):\n")
-		fmt.Printf("From: %s\n", data.Name)
-		fmt.Printf("Reason: %s\n", data.Reason)
-		fmt.Printf("Subject: %s\n", data.Subject)
-		fmt.Printf("Body: %s\n", data.Body)
-		return nil // Return nil to simulate success for development
-	}
-
-	// Create email message
+	emailSubject := fmt.Sprintf(
+		"Portfolio Contact Form for %s from %s: %s",
+		data.Reason,
+		data.Name,
+		data.Subject,
+	)
 	emailBody := fmt.Sprintf(`
 Contact Form Submission
 
@@ -199,14 +181,32 @@ Message:
 %s
 	`, data.Name, data.Reason, data.Subject, data.Body)
 
-	msg := []byte(fmt.Sprintf("To: %s\r\n"+
-		"Subject: Contact Form: %s\r\n"+
-		"\r\n"+
-		"%s\r\n", toEmail, data.Subject, emailBody))
+	key := os.Getenv("SMTP_KEY")
+	from := os.Getenv("SMTP_FROM")
+	host := os.Getenv("SMTP_HOST")
+	portStr := os.Getenv("SMTP_PORT")
+	port, err := strconv.Atoi(portStr)
+	if err != nil {
+		return fmt.Errorf("error converting port to string for SMTP host, invalid port: %v", err)
+	}
+	to := os.Getenv("TO_EMAIL")
 
-	// Send email
-	auth := smtp.PlainAuth("", smtpUser, smtpPass, smtpHost)
-	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, smtpUser, []string{toEmail}, msg)
+	msg := gomail.NewMessage()
+	msg.SetHeader("From", from)
+	msg.SetHeader("To", to)
+	msg.SetHeader("Subject", emailSubject)
+	msg.SetBody("text/plain", emailBody)
+
+	dialer := gomail.NewDialer(host, port, from, key)
+	if err := dialer.DialAndSend(msg); err != nil {
+		return fmt.Errorf(
+			"error sending email to %s from %s on SMTP server %s: %v",
+			to,
+			from,
+			host,
+			err,
+		)
+	}
 
 	return err
 }
