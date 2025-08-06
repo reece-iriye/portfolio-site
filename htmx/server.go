@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/joho/godotenv"
 	"gopkg.in/gomail.v2"
 )
 
@@ -151,7 +152,7 @@ func contactSubmitHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(
 			w,
-			`<div class="form-response error">There was an error sending your message. Please try again or contact me directly.</div>`,
+			`<div class="form-response error">There was an error sending your message. Please try again or contact me directly via LinkedIn.</div>`,
 		)
 		return
 	}
@@ -180,6 +181,11 @@ Subject: %s
 Message:
 %s
 	`, data.Name, data.Reason, data.Subject, data.Body)
+
+	err := godotenv.Load(".env")
+	if err != nil {
+		return err
+	}
 
 	key := os.Getenv("SMTP_KEY")
 	from := os.Getenv("SMTP_FROM")
