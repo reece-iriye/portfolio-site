@@ -182,10 +182,7 @@ Message:
 %s
 	`, data.Name, data.Reason, data.Subject, data.Body)
 
-	err := godotenv.Load(".env")
-	if err != nil {
-		return err
-	}
+	godotenv.Load(".env")
 
 	key := os.Getenv("SMTP_KEY")
 	from := os.Getenv("SMTP_FROM")
