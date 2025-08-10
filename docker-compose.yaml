@@ -24,6 +24,7 @@ services:
     build:
       context: ./htmx
       dockerfile: Dockerfile
+    container_name: htmx-portfolio
     ports:
       - "8080:8080"
     env_file:
