@@ -1,11 +1,11 @@
 ---
-version: '3'
+version: "3"
 services:
   prometheus:
     image: prom/prometheus
     container_name: prometheus
     volumes:
-      - "./prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml"
+      - ./prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
     ports:
       - 9090:9090
 
@@ -26,6 +26,6 @@ services:
       dockerfile: Dockerfile
     container_name: htmx-portfolio
     ports:
-      - "8080:8080"
+      - 8080:8080
     env_file:
       - ./htmx/.env
