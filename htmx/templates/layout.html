@@ -63,4 +63,13 @@
   </footer>
 </body>
 
+<script>
+  document.body.addEventListener("htmx:afterSwap", (evt) => {
+    if (evt.target.id === "content") {
+      window.scrollTo(0, 0);
+    }
+  });
+</script>
+
+
 </html>
