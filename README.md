@@ -22,3 +22,9 @@ docker run --env-file .env -p 8080:8080 portfolio-server
 
 From here, you can fetch data from the HTMX/Go server using `http://localhost:8080`.
 
+### Accessing Observability Tools
+
+```bash
+ssh -L 3000:localhost:3000 -L 9090:localhost:9090 user@gcp-vmname
+```
+

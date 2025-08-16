@@ -1,0 +1,3 @@
+reeceiriye.me {
+    reverse_proxy htmx-portfolio:8080
+}
