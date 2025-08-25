@@ -25,8 +25,9 @@ jobs:
 
       - name: Deploy to VM over IAP
         run: |
-          gcloud compute ssh deployuser@${{ secrets.GCP_INSTANCE_NAME }} \
+          gcloud compute ssh githubactions-deploy-user@${{ secrets.GCP_INSTANCE_NAME }}.iam.gserviceaccount.com \
             --tunnel-through-iap \
             --project=${{ secrets.GCP_PROJECT_ID }} \
             --zone=${{ secrets.GCP_ZONE }} \
-            --command="cd ~/portfolio-site && git pull origin main && docker-compose pull && docker-compose up -d"
+            --command="echo 'Hello world!'"
+          # --command="cd ~/portfolio-site && git pull origin main && docker-compose pull && docker-compose up -d"
