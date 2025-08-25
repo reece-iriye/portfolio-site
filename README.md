@@ -32,7 +32,7 @@ From here, you can fetch data from the HTMX/Go server using `http://localhost:80
 
 Create a Google Cloud Platform VM on the [Google Cloud console](https://console.cloud.google.com). Specify all resource requirements when creating the VM. Because all containers for my portfolio application consume minimal resources, I opted for the smallest resource count to save money and resources, while being enough to run Docker containers and the `dockerd` daemon.
 
-![Cloud Platform Home Page](https://github.com/reece-iriye/portfolio-site/assets/root-readme/gcloud-homepage-create-vm-button.png)
+![Cloud Platform Home Page](https://raw.githubusercontent.com/reece-iriye/portfolio-site/main/assets/root-readme/gcloud-homepage-create-vm-button.png)
 
 ### Access VM Using SSH
 
