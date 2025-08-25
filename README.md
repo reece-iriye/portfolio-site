@@ -25,26 +25,29 @@ From here, you can fetch data from the HTMX/Go server using `http://localhost:80
 
 
 
-## Deploy Docker Containers on GCP VirtualMachine
+## Deploy Docker Compose Production Environment on GCP Virtual Machine
 
 
+### Create VM
 
-### Add GitHub Repository to VM
+Create a Google Cloud Platform VM on the [Google Cloud console](https://console.cloud.google.com). Specify all resource requirements when creating the VM. Because all containers for my portfolio application consume minimal resources, I opted for the smallest resource count to save money and resources, while being enough to run Docker containers and the `dockerd` daemon.
 
+![Cloud Platform Home Page](https://github.com/reece-iriye/portfolio-site/assets/root-readme/gcloud-homepage-create-vm-button.png)
 
+### Access VM Using SSH
+
+```bash
+gcloud init  # Follow log-in instructions
+gcloud compute ssh --zone <ZONE> <INSTANCE_NAME> --project <PROJECT_NAME>
+```
+
+### Install Git on VM
 
 
 ```bash
-cd /srv
-sudo mkdir github
-cd ./github
-
 sudo apt-get update
 sudo apt-get install git
 git --version
-
-sudo git clone https://github.com/reece-iriye/portfolio-site
-cd portfolio-site
 ```
 
 ### Add Docker to VM
@@ -85,11 +88,7 @@ Then, log out and back in, and test `docker ps` to test that it's working.
 
 
 
-
-
 ## Set Up Continuous Deployment
-
-
 
 
 
@@ -98,6 +97,10 @@ Then, log out and back in, and test `docker ps` to test that it's working.
 Create the Linux user. I decided to create the user inside the `/srv/github` directory to separate CI/CD service accounts associated with Github Actions from the rest of the users in `/home`.
 
 ```bash
+cd /srv
+sudo mkdir -p ./github
+cd ./github
+
 sudo useradd -m -r -d /srv/github/deployuser -s /bin/bash deployuser
 ```
 
@@ -106,6 +109,31 @@ Then, add `deployuser` to Docker group.
 ```bash
 sudo usermod -aG docker deployuser
 ```
+
+
+### Pull GitHub Repository and Configure Environment Variables
+
+Pull the repository's main branch and configure it to successfully.
+
+```bash
+sudo su - deployuser
+git clone https://github.com/reece-iriye/portfolio-site
+cd ./portfolio-site
+git branch --set-upstream-to=origin/main main
+exit
+
+# If portfolio site is created by separate user, run this command to ensure deployuser owns all files within the directory
+sudo chown -R deployuser:deployuser /srv/github/deployuser/portfolio-site
+```
+
+### Enviromnent Variable File Injection
+
+All environment varibles need to be configured in each directory. Please reference the `.env.example` files to showcase exactly which variables need to be created, and create them in each `.env` file in each subdirectory in accordance with the `.env.example` files.
+
+
+### Configure SSH Public Key for GitLab
+
+
 
 Now, on a separate shell outside of the GCP VM (I did this on my Mac ZSH shell), generate an SSH key.
 
@@ -155,8 +183,7 @@ Finally, test external VM access from the same device that the private key was c
 ssh -i ~/.ssh/github_actions_deploy_key deployuser@<VM_EXTERNAL_IP> -vvv
 ```
 
-From here, continuous deployment onto the GCP VM via the `deployuser` Linux service account is almost successfully configured. The `deploy-gcp-vm` job will be invoked upon pushing to main in this repository. All that needs to be configured now are the secrets on GitHub. The jobs will fail upon each commit to main, because the empty secrets will not invoke jobs correctly.
-
+From here, continuous deployment onto the GCP VM via the `deployuser` Linux service account is almost successfully configured. The `deploy-gcp-vm` job will be invoked upon pushing to main in this repository. All that needs to be configured now are the secrets on GitHub. The jobs will fail upon each commit to main, because the empty secrets.
 
 
 
