@@ -185,13 +185,14 @@ Message:
 	godotenv.Load(".env")
 
 	key := os.Getenv("SMTP_KEY")
-	from := os.Getenv("SMTP_FROM")
+	login := os.Getenv("SMTP_EMAIL")
 	host := os.Getenv("SMTP_HOST")
 	portStr := os.Getenv("SMTP_PORT")
 	port, err := strconv.Atoi(portStr)
 	if err != nil {
 		return fmt.Errorf("error converting port to string for SMTP host, invalid port: %v", err)
 	}
+	from := os.Getenv("FROM_EMAIL")
 	to := os.Getenv("TO_EMAIL")
 
 	msg := gomail.NewMessage()
@@ -200,12 +201,12 @@ Message:
 	msg.SetHeader("Subject", emailSubject)
 	msg.SetBody("text/plain", emailBody)
 
-	dialer := gomail.NewDialer(host, port, from, key)
+	dialer := gomail.NewDialer(host, port, login, key)
 	if err := dialer.DialAndSend(msg); err != nil {
 		return fmt.Errorf(
 			"error sending email to %s from %s on SMTP server %s: %v",
 			to,
-			from,
+			login,
 			host,
 			err,
 		)
