@@ -188,6 +188,5 @@ From here, continuous deployment onto the GCP VM via the `deployuser` Linux serv
 
 ### Configure Secrets on GitHub
 
-
 ![GitHub Secrets Page](https://raw.githubusercontent.com/reece-iriye/portfolio-site/assets/root-readme/github-secrets.png)
 
