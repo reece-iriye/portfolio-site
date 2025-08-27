@@ -186,7 +186,6 @@ ssh -i ~/.ssh/github_actions_deploy_key deployuser@<VM_EXTERNAL_IP> -vvv
 From here, continuous deployment onto the GCP VM via the `deployuser` Linux service account is almost successfully configured. The `deploy-gcp-vm` job will be invoked upon pushing to main in this repository. All that needs to be configured now are the secrets on GitHub. The jobs will fail upon each commit to main, because the empty secrets.
 
 
-
 ### Configure Secrets on GitHub
 
 

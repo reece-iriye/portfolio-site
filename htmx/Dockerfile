@@ -13,6 +13,6 @@ COPY --from=builder /app/templates ./templates
 COPY --from=builder /app/static ./static
 RUN apk --no-cache add ca-certificates tzdata
 ENV TZ=UTC
-USER developuser
+USER githubactions-deploy-user
 EXPOSE 8080
 ENTRYPOINT ["/app/portfolio-server"]
