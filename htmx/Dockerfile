@@ -1,18 +1,35 @@
 # ---- Build stage ----
 FROM golang:1.24.5-alpine AS builder
+
+RUN apk --no-cache add build-base
+
 WORKDIR /app
-COPY . .
+
+COPY go.mod go.sum ./
 RUN go mod tidy && go mod download
+
+COPY . .
+
 RUN CGO_ENABLED=0 go build -o portfolio-server ./
+
 
 # ---- Runtime stage ----
 FROM alpine:edge
+
+RUN apk --no-cache add ca-certificates tzdata
+
 WORKDIR /app
+
+RUN addgroup -g 1001 appuser \
+ && adduser -D -u 1001 -G appuser appuser
+
 COPY --from=builder /app/portfolio-server ./
 COPY --from=builder /app/templates ./templates
 COPY --from=builder /app/static ./static
-RUN apk --no-cache add ca-certificates tzdata
+
 ENV TZ=UTC
-USER githubactions-deploy-user
+
+USER appuser
+
 EXPOSE 8080
 ENTRYPOINT ["/app/portfolio-server"]
