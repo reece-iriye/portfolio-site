@@ -5,7 +5,17 @@
 
 reeceiriye.me {
 	reverse_proxy htmx-portfolio:8080
+
 	tls {
 		protocols tls1.2 tls1.3
+	}
+
+	rate_limit {
+		zone per_ip {
+			key {http.request.header.CF-Connecting-IP}  # Real client IP instead of Cloudflare IP
+			rate 10r/m
+			burst 5
+		}
+		deny 429
 	}
 }
