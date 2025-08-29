@@ -53,4 +53,5 @@ jobs:
             --tunnel-through-iap \
             --project=${{ secrets.GCP_PROJECT_ID }} \
             --zone=${{ secrets.GCP_ZONE }} \
-            --command="cd ~/portfolio-site && docker compose pull && docker compose up -d"
+            --command="cd ~/portfolio-site && docker compose pull && docker compose -f compose.prod.yaml up -d"
+
