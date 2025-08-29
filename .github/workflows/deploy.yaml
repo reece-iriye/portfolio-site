@@ -39,10 +39,18 @@ jobs:
       - name: Set up GCP SDK
         uses: google-github-actions/setup-gcloud@v1
 
-      - name: Deploy to VM over IAP
+      - name: Update Git Repository in VM over IAP
         run: |
           gcloud compute ssh githubactions-deploy-user@${{ secrets.GCP_INSTANCE_NAME }} \
             --tunnel-through-iap \
             --project=${{ secrets.GCP_PROJECT_ID }} \
             --zone=${{ secrets.GCP_ZONE }} \
-            --command="cd ~/portfolio-site && git pull origin main && docker compose pull && docker compose up -d"
+            --command="cd ~/portfolio-site && git pull origin main"
+
+      - name: Update Containers on VM over IAP
+        run: |
+          gcloud compute ssh githubactions-deploy-user@${{ secrets.GCP_INSTANCE_NAME }} \
+            --tunnel-through-iap \
+            --project=${{ secrets.GCP_PROJECT_ID }} \
+            --zone=${{ secrets.GCP_ZONE }} \
+            --command="cd ~/portfolio-site && docker compose pull && docker compose up -d"

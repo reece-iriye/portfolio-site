@@ -1,3 +1,11 @@
+{
+	acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	email {env.ACME_ACCOUNT}
+}
+
 reeceiriye.me {
-    reverse_proxy htmx-portfolio:8080
+	reverse_proxy htmx-portfolio:8080
+	tls {
+		protocols tls1.2 tls1.3
+	}
 }

@@ -36,13 +36,21 @@ services:
       - grafana
       - prometheus
     restart: unless-stopped
+    environment:
+      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
+      - ACME_ACCOUNT=${ACME_ACCOUNT}
 
   htmx-server:
     build:
       context: ./htmx
-      dockerfile: Dockerfile
+      dockerfile: Containerfile
     container_name: htmx-portfolio
     expose:
       - "8080"
     env_file:
       - ./htmx/.env
+
+volumes:
+  # Need persistent storage for TLS certs and ACME metadata for container restarts
+  caddy_data:
+  caddy_config:
