@@ -8,7 +8,7 @@ Here is my portfolio. I am deloying this on a Google Cloud Platform VM using Doc
 
 Here are the following set-up's that need to take place when deploying my portfolio on-prem in a Kubernetes cluster and using Docker.
 
-#### Application Local Testing
+#### Single-Server Application Local Testing with Docker
 
 First, set up a `.env` file using the variables from the `.env.example` file. All these values are required for successfully configuring an SMTP server using your choice of service. I tested these configurations using a Brevo SMTP server.
 
@@ -153,8 +153,6 @@ sudo usermod -aG docker githubactions-deploy-user
 
 Then, log out and back in, and test `docker run hello-world` and `docker ps` on both accounts to test that it's working.
 
-
-## Set Up Continuous Deployment
 
 ### Enviromnent Variable File Injection via GitHub Secrets
 
