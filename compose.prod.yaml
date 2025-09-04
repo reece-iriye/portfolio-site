@@ -1,8 +1,9 @@
 ---
 version: "3"
+
 services:
   prometheus:
-    image: prom/prometheus
+    image: prom/prometheus:v3.6.0-rc.0
     container_name: prometheus
     volumes:
       - ./prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
@@ -10,11 +11,11 @@ services:
       - "9090"
 
   grafana:
-    image: grafana/grafana
+    image: grafana/grafana:12.2.0-17449462949-ubuntu
+    restart: unless-stopped
     container_name: grafana
     expose:
       - "3000"
-    restart: unless-stopped
     env_file:
       - ./grafana/.env
     volumes:
@@ -22,20 +23,23 @@ services:
 
   # Caddy automatically renews TLS certs
   caddy:
-    image: caddy:alpine
+    image: caddybuilds/caddy-cloudflare:2.10.2-alpine
+    restart: unless-stopped
     container_name: caddy
+    cap_add:
+      - NET_ADMIN
     ports:
       - "80:80" # Caddy redirects to https internally
       - "443:443"
+      - "443:443/udp"
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
-      - ./caddy_data:/data
-      - ./caddy_config:/config
+      - $PWD/Caddyfile:/etc/caddy/Caddyfile
+      - $PWD/caddy_data:/data
+      - $PWD/caddy_config:/config
     depends_on:
       - htmx-server
       - grafana
       - prometheus
-    restart: unless-stopped
     environment:
       - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
       - ACME_ACCOUNT=${ACME_ACCOUNT}
@@ -55,8 +59,8 @@ services:
       - FROM_EMAIL=${FROM_EMAIL}
       - TO_EMAIL=${TO_EMAIL}
 
-
 volumes:
   # Need persistent storage for TLS certs and ACME metadata for container restarts
   caddy_data:
+    external: true
   caddy_config:

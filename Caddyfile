@@ -13,7 +13,7 @@ reeceiriye.me {
 	rate_limit {
 		zone per_ip {
 			key {http.request.header.CF-Connecting-IP}  # Real client IP instead of Cloudflare IP
-			rate 10r/m
+			rate 8r/m
 			burst 5
 		}
 		deny 429
