@@ -4,7 +4,9 @@
 }
 
 reeceiriye.me {
-	reverse_proxy htmx-portfolio:8080
+	reverse_proxy htmx-portfolio:8080 {
+		header_up X-Real-IP {http.reverse_proxy.upstream.address}
+	}
 
 	tls {
 		protocols tls1.2 tls1.3
