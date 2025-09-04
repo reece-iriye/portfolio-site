@@ -37,7 +37,7 @@ func main() {
 	mux.HandleFunc("/contact-me", contactHandler)
 	mux.HandleFunc("/contact", contactSubmitHandler) // New handler for form submission
 
-	fmt.Println("Server running on :8080")
+	fmt.Println("HTMX server running...")
 	if err := http.ListenAndServe(":8080", mux); err != nil {
 		fmt.Println("Error starting server:", err)
 		os.Exit(1)
@@ -171,8 +171,7 @@ func sendContactEmail(data ContactFormData) error {
 		data.Name,
 		data.Subject,
 	)
-	emailBody := fmt.Sprintf(`
-Contact Form Submission
+	emailBody := fmt.Sprintf(`Contact Form Submission
 
 From: %s
 Reason: %s
@@ -203,13 +202,7 @@ Message:
 
 	dialer := gomail.NewDialer(host, port, login, key)
 	if err := dialer.DialAndSend(msg); err != nil {
-		return fmt.Errorf(
-			"error sending email to %s from %s on SMTP server %s: %v",
-			to,
-			login,
-			host,
-			err,
-		)
+		return fmt.Errorf("error sending email on SMTP server: %v", err)
 	}
 
 	return err

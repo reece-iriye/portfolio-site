@@ -47,8 +47,14 @@ services:
     container_name: htmx-portfolio
     expose:
       - "8080"
-    env_file:
-      - ./htmx/.env
+    environment:
+      - SMTP_KEY=${SMTP_KEY}
+      - SMTP_EMAIL=${SMTP_EMAIL}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - FROM_EMAIL=${FROM_EMAIL}
+      - TO_EMAIL=${TO_EMAIL}
+
 
 volumes:
   # Need persistent storage for TLS certs and ACME metadata for container restarts
