@@ -66,6 +66,7 @@ jobs:
             --command="cd ~/portfolio-site && \
               git pull origin main && \
               docker compose --env-file .env.prod -f compose.prod.yaml pull && \
+              docker compose --env-file .env.prod -f compose.prod.yaml build && \
               docker compose --env-file .env.prod -f compose.prod.yaml up -d"
 
           shred -u .env.prod
