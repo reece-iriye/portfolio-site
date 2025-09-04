@@ -6,7 +6,7 @@ services:
     image: prom/prometheus:v3.6.0-rc.0
     container_name: prometheus
     volumes:
-      - ./prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
+      - $PWD/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
     expose:
       - "9090"
 
@@ -17,13 +17,15 @@ services:
     expose:
       - "3000"
     env_file:
-      - ./grafana/.env
+      - $PWD/grafana/.env
     volumes:
-      - ./grafana:/etc/grafana/provisioning/datasources
+      - $PWD/grafana:/etc/grafana/provisioning/datasources
 
-  # Caddy automatically renews TLS certs
+  # Caddy proxy renews TLS certs and rate-limits clients
   caddy:
-    image: caddybuilds/caddy-cloudflare:2.10.2-alpine
+    build:
+      context: ./caddy
+      dockerfile: Containerfile
     restart: unless-stopped
     container_name: caddy
     cap_add:
@@ -33,9 +35,9 @@ services:
       - "443:443"
       - "443:443/udp"
     volumes:
-      - $PWD/Caddyfile:/etc/caddy/Caddyfile
-      - $PWD/caddy_data:/data
-      - $PWD/caddy_config:/config
+      - $PWD/caddy/Caddyfile:/etc/caddy/Caddyfile
+      - $PWD/caddy/caddy_data:/data
+      - $PWD/caddy/caddy_config:/config
     depends_on:
       - htmx-server
       - grafana
