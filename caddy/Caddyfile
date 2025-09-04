@@ -8,6 +8,7 @@ reeceiriye.me {
 	handle /static/* {
 		file_server
 		header Cache-Control "public, max-age=86400"
+		root * /app/static
 	}
 
 	reverse_proxy htmx-portfolio:8080 {
@@ -19,7 +20,11 @@ reeceiriye.me {
 	}
 
 	rate_limit {
-		distributed
+		zone static_assets {
+			key static
+			window 1m
+			events 10000
+		}
 		zone per_ip {
 			key {http.request.header.CF-Connecting-IP}
 			window 1m
