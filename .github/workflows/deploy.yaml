@@ -51,6 +51,9 @@ jobs:
           echo "FROM_EMAIL=${{ secrets.FROM_EMAIL }}" >> .env.prod
           echo "TO_EMAIL=${{ secrets.TO_EMAIL }}" >> .env.prod
 
+          echo "CLOUDFLARE_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }}" >> .env.prod
+          echo "ACME_ACCOUNT=${{ secrets.ACME_ACCOUNT }}" >> .env.prod
+
           gcloud compute scp .env.prod githubactions-deploy-user@${{ secrets.GCP_INSTANCE_NAME }}:~/portfolio-site/.env.prod \
             --tunnel-through-iap \
             --project=${{ secrets.GCP_PROJECT_ID }} \
