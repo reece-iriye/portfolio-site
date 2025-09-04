@@ -14,6 +14,7 @@ import (
 	"gopkg.in/gomail.v2"
 )
 
+// ContactFormData holds the submitted contact form values
 type ContactFormData struct {
 	Name    string
 	Reason  string
@@ -21,13 +22,27 @@ type ContactFormData struct {
 	Body    string
 }
 
-func main() {
-	mux := http.NewServeMux()
-	mux.Handle(
-		"/static/",
-		http.StripPrefix("/static/", http.FileServer(http.Dir("static"))),
-	)
+// TemplateManager holds all parsed templates
+type TemplateManager struct {
+	layout  *template.Template
+	content map[string]*template.Template
+}
 
+var templates TemplateManager
+
+func main() {
+	// Preload all templates at startup
+	if err := loadTemplates(); err != nil {
+		fmt.Printf("Error loading templates: %v\n", err)
+		os.Exit(1)
+	}
+
+	mux := http.NewServeMux()
+
+	// Static file server
+	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+
+	// Routes
 	mux.HandleFunc("/", homeHandler)
 	mux.HandleFunc("/home", homeHandler)
 	mux.HandleFunc("/work-history", workHandler)
@@ -35,92 +50,116 @@ func main() {
 	// mux.HandleFunc("/speaking-engagements", speakingHandler)
 	mux.HandleFunc("/metrics", metricsHandler)
 	mux.HandleFunc("/contact-me", contactHandler)
-	mux.HandleFunc("/contact", contactSubmitHandler) // New handler for form submission
+	mux.HandleFunc("/contact", contactSubmitHandler)
 
-	fmt.Println("HTMX server running...")
+	fmt.Println("HTMX server running on :8080...")
 	if err := http.ListenAndServe(":8080", mux); err != nil {
 		fmt.Println("Error starting server:", err)
 		os.Exit(1)
 	}
 }
 
+// loadTemplates pre-parses all templates into memory
+func loadTemplates() error {
+	templates.content = make(map[string]*template.Template)
+
+	// Load layout
+	layoutPath := filepath.Join("templates", "layout.html")
+	layout, err := template.ParseFiles(layoutPath)
+	if err != nil {
+		return fmt.Errorf("failed to parse layout template: %w", err)
+	}
+	templates.layout = layout
+
+	// Load all content templates
+	contentDir := filepath.Join("templates", "content")
+	files, err := os.ReadDir(contentDir)
+	if err != nil {
+		return fmt.Errorf("failed to read content directory: %w", err)
+	}
+
+	for _, file := range files {
+		if file.IsDir() {
+			continue
+		}
+		name := strings.TrimSuffix(file.Name(), filepath.Ext(file.Name()))
+		path := filepath.Join(contentDir, file.Name())
+		t, err := template.ParseFiles(path)
+		if err != nil {
+			return fmt.Errorf("failed to parse content template %s: %w", file.Name(), err)
+		}
+		templates.content[name] = t
+	}
+
+	return nil
+}
+
 func renderPage(w http.ResponseWriter, r *http.Request, page string, data interface{}) {
-	contentPath := filepath.Join("templates", "content", fmt.Sprintf("%s.html", page))
+	t, ok := templates.content[page]
+	if !ok {
+		http.Error(w, "Template not found", http.StatusInternalServerError)
+		return
+	}
 
-	// HTMX: render only the inner content template
+	// HTMX request: only render inner content
 	if r.Header.Get("HX-Request") == "true" {
-		t := template.Must(template.ParseFiles(contentPath))
-		t.ExecuteTemplate(w, "Content", data)
+		if err := t.ExecuteTemplate(w, "Content", data); err != nil {
+			http.Error(
+				w,
+				fmt.Sprintf("Error executing template: %v", err),
+				http.StatusInternalServerError,
+			)
+		}
 		return
 	}
 
-	// Non-HTMX: render full layout with content injected
 	contentBuf := new(bytes.Buffer)
-	t := template.Must(template.ParseFiles(contentPath))
-	t.ExecuteTemplate(contentBuf, "Content", data)
+	if err := t.ExecuteTemplate(contentBuf, "Content", data); err != nil {
+		http.Error(
+			w,
+			fmt.Sprintf("Error executing template: %v", err),
+			http.StatusInternalServerError,
+		)
+		return
+	}
 
-	fullLayout := template.Must(template.ParseFiles("templates/layout.html"))
-	fullLayout.Execute(w, map[string]interface{}{
+	if err := templates.layout.Execute(w, map[string]interface{}{
 		"Content": template.HTML(contentBuf.String()),
-	})
-}
-
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "GET" {
-		http.Error(w, "Invalid request method", http.StatusBadRequest)
-		return
+	}); err != nil {
+		http.Error(
+			w,
+			fmt.Sprintf("Error executing layout template: %v", err),
+			http.StatusInternalServerError,
+		)
 	}
-	renderPage(w, r, "home", nil)
 }
 
-func workHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "GET" {
-		http.Error(w, "Invalid request method", http.StatusBadRequest)
-		return
-	}
-	renderPage(w, r, "work-history", nil)
-}
-
-func projectsHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "GET" {
-		http.Error(w, "Invalid request method", http.StatusBadRequest)
-		return
-	}
-	renderPage(w, r, "projects", nil)
-}
-
+// ---- Handlers ----
+func homeHandler(w http.ResponseWriter, r *http.Request)     { handleGet(w, r, "home") }
+func workHandler(w http.ResponseWriter, r *http.Request)     { handleGet(w, r, "work-history") }
+func projectsHandler(w http.ResponseWriter, r *http.Request) { handleGet(w, r, "projects") }
 func speakingHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "GET" {
+	handleGet(w, r, "speaking-engagements")
+}
+func metricsHandler(w http.ResponseWriter, r *http.Request) { handleGet(w, r, "metrics") }
+func contactHandler(w http.ResponseWriter, r *http.Request) { handleGet(w, r, "contact-me") }
+
+func handleGet(w http.ResponseWriter, r *http.Request, page string) {
+	if r.Method != http.MethodGet {
 		http.Error(w, "Invalid request method", http.StatusBadRequest)
 		return
 	}
-	renderPage(w, r, "speaking-engagements", nil)
+	renderPage(w, r, page, nil)
 }
 
-func metricsHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "GET" {
-		http.Error(w, "Invalid request method", http.StatusBadRequest)
-		return
-	}
-	renderPage(w, r, "metrics", nil)
-}
-
-func contactHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "GET" {
-		http.Error(w, "Invalid request method", http.StatusBadRequest)
-		return
-	}
-	renderPage(w, r, "contact-me", nil)
-}
-
+// ---- Contact Form ----
 func contactSubmitHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
+	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
 	}
 
-	err := r.ParseForm()
-	if err != nil {
+	if err := r.ParseForm(); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(
 			w,
@@ -146,8 +185,7 @@ func contactSubmitHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = sendContactEmail(formData)
-	if err != nil {
+	if err := sendContactEmail(formData); err != nil {
 		fmt.Printf("Error sending email: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(
@@ -179,7 +217,7 @@ Subject: %s
 
 Message:
 %s
-	`, data.Name, data.Reason, data.Subject, data.Body)
+`, data.Name, data.Reason, data.Subject, data.Body)
 
 	godotenv.Load(".env")
 
@@ -189,7 +227,7 @@ Message:
 	portStr := os.Getenv("SMTP_PORT")
 	port, err := strconv.Atoi(portStr)
 	if err != nil {
-		return fmt.Errorf("error converting port to string for SMTP host, invalid port: %v", err)
+		return fmt.Errorf("invalid SMTP port: %v", err)
 	}
 	from := os.Getenv("FROM_EMAIL")
 	to := os.Getenv("TO_EMAIL")
@@ -202,8 +240,8 @@ Message:
 
 	dialer := gomail.NewDialer(host, port, login, key)
 	if err := dialer.DialAndSend(msg); err != nil {
-		return fmt.Errorf("error sending email on SMTP server: %v", err)
+		return fmt.Errorf("error sending email: %v", err)
 	}
 
-	return err
+	return nil
 }
