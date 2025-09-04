@@ -17,12 +17,14 @@ reeceiriye.me {
 		zone per_ip {
 			key {http.request.header.CF-Connecting-IP}
 			window 1m
-			events 8
+			events 70
+			burst 10
 		}
 		zone generic {
 			key static
 			window 1m
-			events 120
+			events 500
+			burst 10
 		}
 		log_key
 	}
