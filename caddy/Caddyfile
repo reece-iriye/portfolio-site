@@ -11,11 +11,17 @@ reeceiriye.me {
 	}
 
 	rate_limit {
+		distributed
 		zone per_ip {
-			key {http.request.header.CF-Connecting-IP}  # Real client IP instead of Cloudflare IP
-			rate 8r/m
-			burst 5
+			key {http.request.header.CF-Connecting-IP}
+			window 1m
+			events 8
 		}
-		deny 429
+		zone generic {
+			key static
+			window 1m
+			events 120
+		}
+		log_key
 	}
 }
