@@ -4,39 +4,43 @@
 }
 
 reeceiriye.me {
-	# Serve static files directly
+	# --- Static assets ---
 	handle /static/* {
+		root * /app/static
 		file_server
 		header Cache-Control "public, max-age=86400"
-		root * /app/static
+
+		# Static-specific rate limit
+		rate_limit {
+			zone static_per_ip {
+				key {http.request.header.CF-Connecting-IP}
+				window 1m
+				events 1200
+				burst 50
+			}
+			log_key
+		}
 	}
 
-	reverse_proxy htmx-portfolio:8080 {
-		header_up X-Real-IP {http.reverse_proxy.upstream.address}
+	# --- Dynamic routes (proxied to Go server) ---
+	handle {
+		reverse_proxy htmx-portfolio:8080 {
+			header_up X-Real-IP {http.reverse_proxy.upstream.address}
+		}
+
+		# Dynamic-specific rate limit
+		rate_limit {
+			zone per_ip {
+				key {http.request.header.CF-Connecting-IP}
+				window 1m
+				events 70
+				burst 10
+			}
+			log_key
+		}
 	}
 
 	tls {
 		protocols tls1.2 tls1.3
-	}
-
-	rate_limit {
-		zone static_assets {
-			key static
-			window 1m
-			events 10000
-		}
-		zone per_ip {
-			key {http.request.header.CF-Connecting-IP}
-			window 1m
-			events 70
-			burst 10
-		}
-		zone generic {
-			key static
-			window 1m
-			events 500
-			burst 10
-		}
-		log_key
 	}
 }
