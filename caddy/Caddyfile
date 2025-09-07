@@ -7,10 +7,12 @@
 	rate_limit_zone static_per_ip {
 		window 1m
 		events 10000
+		burst 1000
 	}
 	rate_limit_zone api_per_ip {
 		window 1m
 		events 100
+		burst 20
 	}
 	rate_limit_zone contact_per_ip {
 		window 1m
@@ -19,6 +21,7 @@
 	rate_limit_zone catch_all {
 		window 1m
 		events 10
+		burst 5
 	}
 }
 
@@ -59,7 +62,6 @@ reeceiriye.me {
 		rate_limit {
 			zone api_per_ip
 			key {http.request.header.CF-Connecting-IP}{http.request.remote.host}
-			burst 20
 		}
 	}
 
@@ -68,7 +70,6 @@ reeceiriye.me {
 		rate_limit {
 			zone api_per_ip
 			key {http.request.header.CF-Connecting-IP}{http.request.remote.host}
-			burst 20
 		}
 	}
 
@@ -77,7 +78,6 @@ reeceiriye.me {
 		rate_limit {
 			zone contact_per_ip
 			key {http.request.header.CF-Connecting-IP}{http.request.remote.host}
-			burst 2
 		}
 	}
 
@@ -94,7 +94,6 @@ reeceiriye.me {
 		rate_limit {
 			zone catch_all
 			key {http.request.header.CF-Connecting-IP}{http.request.remote.host}
-			burst 20
 		}
 	}
 }
