@@ -4,6 +4,10 @@
 }
 
 reeceiriye.me {
+	tls {
+		protocols tls1.2 tls1.3
+	}
+
 	# --- Static files ---
 	handle /static/* {
 		uri strip_prefix /static
