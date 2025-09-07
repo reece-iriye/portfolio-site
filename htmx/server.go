@@ -14,7 +14,6 @@ import (
 	"gopkg.in/gomail.v2"
 )
 
-// ContactFormData holds the submitted contact form values
 type ContactFormData struct {
 	Name    string
 	Reason  string
@@ -22,7 +21,6 @@ type ContactFormData struct {
 	Body    string
 }
 
-// TemplateManager holds all parsed templates
 type TemplateManager struct {
 	layout  *template.Template
 	content map[string]*template.Template
@@ -31,7 +29,6 @@ type TemplateManager struct {
 var templates TemplateManager
 
 func main() {
-	// Preload all templates at startup
 	if err := loadTemplates(); err != nil {
 		fmt.Printf("Error loading templates: %v\n", err)
 		os.Exit(1)
@@ -39,18 +36,16 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	// Static file server
 	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
-	// Routes
 	mux.HandleFunc("/", homeHandler)
-	mux.HandleFunc("/home", homeHandler)
-	mux.HandleFunc("/work-history", workHandler)
+	mux.HandleFunc("/api/home", homeHandler)
+	mux.HandleFunc("/api/work-history", workHandler)
 	// mux.HandleFunc("/projects", projectsHandler)
 	// mux.HandleFunc("/speaking-engagements", speakingHandler)
-	mux.HandleFunc("/metrics", metricsHandler)
-	mux.HandleFunc("/contact-me", contactHandler)
-	mux.HandleFunc("/contact", contactSubmitHandler)
+	mux.HandleFunc("/api/metrics", metricsHandler)
+	mux.HandleFunc("/api/contact-me", contactHandler)
+	mux.HandleFunc("/api/contact", contactSubmitHandler)
 
 	fmt.Println("HTMX server running on :8080...")
 	if err := http.ListenAndServe(":8080", mux); err != nil {

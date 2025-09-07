@@ -5,15 +5,17 @@ services:
   prometheus:
     image: prom/prometheus:v3.6.0-rc.0
     container_name: prometheus
-    volumes:
-      - $PWD/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
     expose:
       - "9090"
+    volumes:
+      - $PWD/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
 
   grafana:
     image: grafana/grafana:12.2.0-17449462949-ubuntu
     restart: unless-stopped
     container_name: grafana
+    depends_on:
+      - prometheus
     expose:
       - "3000"
     env_file:
@@ -21,19 +23,17 @@ services:
     volumes:
       - $PWD/grafana:/etc/grafana/provisioning/datasources
 
-  # Caddy proxy renews TLS certs and rate-limits clients
   caddy:
     build:
-      context: ./caddy
+      context: $PWD/caddy
       dockerfile: Containerfile
     restart: unless-stopped
     container_name: caddy
-    cap_add:
-      - NET_ADMIN
     ports:
-      - "80:80" # Caddy redirects to https internally
+      - "80:80"
       - "443:443"
-      - "443:443/udp"
+    expose:
+      - "2019"  # expose port for /metrics for Prometheus
     volumes:
       - $PWD/caddy/Caddyfile:/etc/caddy/Caddyfile
       - $PWD/caddy/caddy_data:/data
@@ -48,11 +48,14 @@ services:
 
   htmx-server:
     build:
-      context: ./htmx
+      context: $PWD/htmx
       dockerfile: Containerfile
     container_name: htmx-portfolio
     expose:
       - "8080"
+    depends_on:
+      - prometheus
+      - grafana
     environment:
       - SMTP_KEY=${SMTP_KEY}
       - SMTP_EMAIL=${SMTP_EMAIL}

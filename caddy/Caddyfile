@@ -4,43 +4,92 @@
 }
 
 reeceiriye.me {
-	# --- Static assets ---
-	handle /static/* {
+	# --- Static files ---
+	handle_path /static/* {
 		root * /app/static
 		file_server
 		header Cache-Control "public, max-age=86400"
-
-		# Static-specific rate limit
 		rate_limit {
-			zone static_per_ip {
-				key {http.request.header.CF-Connecting-IP}
-				window 1m
-				events 1200
-				burst 50
-			}
-			log_key
+			zone api_per_ip
+			key {http.request.header.CF-Connecting-IP}{http.request.remote.host}
+			window 1m
+			events 10000
+			burst 120
 		}
 	}
 
-	# --- Dynamic routes (proxied to Go server) ---
+	# --- API endpoints (normal rate limits) ---
+	handle_path /api/home {
+		reverse_proxy htmx-portfolio:8080
+		rate_limit {
+			zone api_per_ip
+			key {http.request.header.CF-Connecting-IP}{http.request.remote.host}
+			window 1m
+			events 100
+			burst 20
+		}
+	}
+
+	handle_path /api/work-history {
+		reverse_proxy htmx-portfolio:8080
+		rate_limit {
+			zone api_per_ip
+			key {http.request.header.CF-Connecting-IP}{http.request.remote.host}
+			window 1m
+			events 100
+			burst 20
+		}
+	}
+
+	handle_path /api/metrics {
+		reverse_proxy htmx-portfolio:8080
+		rate_limit {
+			zone api_per_ip
+			key {http.request.header.CF-Connecting-IP}{http.request.remote.host}
+			window 1m
+			events 100
+			burst 20
+		}
+	}
+
+	handle_path /api/contact-me {
+		reverse_proxy htmx-portfolio:8080
+		rate_limit {
+			zone api_per_ip
+			key {http.request.header.CF-Connecting-IP}{http.request.remote.host}
+			window 1m
+			events 100
+			burst 20
+		}
+	}
+
+	handle_path /api/contact {
+		reverse_proxy htmx-portfolio:8080
+		rate_limit {
+			zone contact_per_ip
+			key {http.request.header.CF-Connecting-IP}{http.request.remote.host}
+			window 1m
+			events 5
+			burst 2
+		}
+	}
+
+	# --- Homepage ---
+	handle_path / {
+		rewrite * /api/home
+	}
+
+	# --- Everything else (including 404s) ---
 	handle {
-		reverse_proxy htmx-portfolio:8080 {
-			header_up X-Real-IP {http.reverse_proxy.upstream.address}
-		}
-
-		# Dynamic-specific rate limit
+		@prettyURL not path /api/* /static/*
+		rewrite @prettyURL /api{uri}  # prepend /api to whatever the path is
+		reverse_proxy htmx-portfolio:8080
 		rate_limit {
-			zone per_ip {
-				key {http.request.header.CF-Connecting-IP}
-				window 1m
-				events 70
-				burst 10
-			}
-			log_key
+			zone catch_all
+			key {http.request.header.CF-Connecting-IP}{http.request.remote.host}
+			window 1m
+			events 100
+			burst 20
 		}
-	}
-
-	tls {
-		protocols tls1.2 tls1.3
 	}
 }
