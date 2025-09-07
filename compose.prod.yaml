@@ -18,8 +18,9 @@ services:
       - prometheus
     expose:
       - "3000"
-    env_file:
-      - $PWD/grafana/.env
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
     volumes:
       - $PWD/grafana:/etc/grafana/provisioning/datasources
 
