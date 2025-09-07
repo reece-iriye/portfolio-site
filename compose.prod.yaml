@@ -39,6 +39,7 @@ services:
       - $PWD/caddy/Caddyfile:/etc/caddy/Caddyfile
       - $PWD/caddy/caddy_data:/data
       - $PWD/caddy/caddy_config:/config
+      - $PWD/htmx/static:/app/static  # Caddy serves assets directly
     depends_on:
       - htmx-server
       - grafana

@@ -6,6 +6,8 @@
 reeceiriye.me {
 	# --- Static files ---
 	handle /static/* {
+		uri strip_prefix /static
+		root * /app/static
 		file_server
 		rate_limit {
 			key {http.request.header.CF-Connecting-IP}{http.request.remote.host}
