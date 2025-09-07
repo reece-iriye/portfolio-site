@@ -6,9 +6,9 @@
 reeceiriye.me {
 	# --- Static files ---
 	handle /static/* {
+		uri strip_prefix /static
 		root * /app/static
 		file_server
-		header Cache-Control "public, max-age=86400"
 		rate_limit {
 			key {http.request.header.CF-Connecting-IP}{http.request.remote.host}
 			window 1m
@@ -62,8 +62,9 @@ reeceiriye.me {
 		}
 	}
 
-	handle_path / {
+	handle / {
 		rewrite * /api/home
+		reverse_proxy htmx-portfolio:8080
 		rate_limit {
 			key {http.request.header.CF-Connecting-IP}{http.request.remote.host}
 			window 1m
