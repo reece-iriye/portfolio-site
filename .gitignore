@@ -5,3 +5,7 @@
 
 # Environment Vars
 **/.env
+
+# Private key
+**/*.key
+**/*.pem

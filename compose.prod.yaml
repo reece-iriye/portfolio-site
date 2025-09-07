@@ -39,7 +39,9 @@ services:
       - $PWD/caddy/Caddyfile:/etc/caddy/Caddyfile
       - $PWD/caddy/caddy_data:/data
       - $PWD/caddy/caddy_config:/config
-      - $PWD/htmx/static:/app/static  # Caddy serves assets directly
+      - $PWD/htmx/static:/app/static:ro  # Caddy serves assets directly
+      - $PWD/caddy/certs/cloudflare-origin-root-domain.crt:/etc/ssl/cloudflare-root.crt:ro
+      - $PWD/caddy/certs/cloudflare-origin-root-domain.key:/etc/ssl/cloudflare-root.key:ro
     depends_on:
       - htmx-server
       - grafana

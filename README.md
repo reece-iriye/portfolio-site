@@ -163,4 +163,75 @@ All environment variables that the application uses need to be configured. Refer
 From here, continuous deployment onto the GCP VM via the `githubactions-deploy-user` service account is almost successfully configured. The `deploy-gcp-vm` job will be invoked upon pushing to main in this repository, or it can be run manually for repository owners. 
 
 
+### SSL Configuration
+
+This application uses Cloudflare Origin SSL certificates to ensure secure HTTPS connections between Cloudflare's edge servers and the Caddy reverse proxy. This approach eliminates SSL handshake issues that can occur with Let's Encrypt certificates when using Cloudflare's proxy service.
+
+#### Generate Cloudflare Origin Certificate
+
+1. Log into your [Cloudflare Dashboard](https://dash.cloudflare.com/)
+2. Navigate to **SSL/TLS → Origin Server**
+3. Click **Create Certificate**
+4. Choose **RSA (2048)** for broader compatibility
+5. Set the certificate validity (up to 15 years)
+6. Download both files:
+   - **Certificate** → save as `cloudflare-origin.crt`
+   - **Private Key** → save as `cloudflare-origin.key`
+
+#### Certificate Deployment
+
+The SSL certificates are managed through a secure directory structure in the repository inside the `caddy/certs/` directory (all files matching `*.key` pattern in any directory is in `.gitignore`):
+
+```
+caddy/certs/
+├── cloudflare-origin-root-domain.crt   # Public certificate (committed to repo)
+└── cloudflare-origin-root-domain.key   # Private key (gitignored, added manually)
+```
+
+**On your development machine:**
+```bash
+# Create the certs directory and add the public certificate
+mkdir certs
+cp ~/Downloads/cloudflare-origin.crt ./certs/cloudflare-origin-root-domain.crt
+git add certs/cloudflare-origin.crt certs/.gitignore
+git commit -m "Add Cloudflare origin certificate"
+```
+
+**On the VM after deployment:**
+```bash
+# Log in as deployment user, navigate to the repository directory, copy private key
+sudo su - githubactions-deploy-user
+cd /path/to/repo/portfolio-site
+cp ~/cloudflare-origin.key ./certs/cloudflare-origin-root-domain.key
+
+# Set proper file permissions
+chmod 600 ./certs/cloudflare-origin-root-domain.key
+chmod 644 ./certs/cloudflare-origin-root-domain.crt
+
+# Verify the private key is not tracked by git
+git status  # Should not show the .key file
+```
+
+#### Cloudflare Dashboard Configuration
+
+Ensure your Cloudflare SSL/TLS settings are configured correctly:
+
+1. **SSL/TLS → Overview**: Set encryption mode to **"Full (strict)"**
+2. **SSL/TLS → Edge Certificates**: 
+   - Enable **"Always Use HTTPS"**
+   - Set **Minimum TLS Version** to **1.2**
+   - Enable **"TLS 1.3"** for better performance
+3. Ensure your domain is **proxied** (orange cloud icon) in the DNS settings
+
+#### GitHub Actions Integration
+
+The private key must be manually added to the VM as it's not stored in version control for security reasons. The GitHub Actions workflow will automatically handle certificate mounting through Docker volumes:
+
+```yaml
+volumes:
+  - $PWD/caddy/certs/cloudflare-origin-root-domain.crt:/etc/ssl/cloudflare-root.crt:ro
+  - $PWD/caddy/certs/cloudflare-origin-root-domain.key:/etc/ssl/cloudflare-root.key:ro
+```
+
+The `Caddyfile` maps to the certificate and private-key file inside of TLS settings.
 
