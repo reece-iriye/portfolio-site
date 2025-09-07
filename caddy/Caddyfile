@@ -5,6 +5,7 @@
 reeceiriye.me {
 	tls /etc/ssl/cloudflare-root.crt /etc/ssl/cloudflare-root.key
 
+
 	# --- Static files ---
 	handle /static/* {
 		uri strip_prefix /static
