@@ -34,7 +34,6 @@ reeceiriye.me {
 		rate_limit {
 			zone static_per_ip
 			key {http.request.header.CF-Connecting-IP}{http.request.remote.host}
-			burst 120
 		}
 	}
 
@@ -44,7 +43,6 @@ reeceiriye.me {
 		rate_limit {
 			zone api_per_ip
 			key {http.request.header.CF-Connecting-IP}{http.request.remote.host}
-			burst 20
 		}
 	}
 
@@ -53,7 +51,6 @@ reeceiriye.me {
 		rate_limit {
 			zone api_per_ip
 			key {http.request.header.CF-Connecting-IP}{http.request.remote.host}
-			burst 20
 		}
 	}
 
