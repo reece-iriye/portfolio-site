@@ -4,24 +4,21 @@
 }
 
 (rate_limit_zones) {
-	rate_limit_zone static_per_ip {
+	zone static_per_ip {
 		window 1m
 		events 10000
-		burst 1000
 	}
-	rate_limit_zone api_per_ip {
+	zone api_per_ip {
 		window 1m
 		events 100
-		burst 20
 	}
-	rate_limit_zone contact_per_ip {
+	zone contact_per_ip {
 		window 1m
 		events 5
 	}
-	rate_limit_zone catch_all {
+	zone catch_all {
 		window 1m
 		events 10
-		burst 5
 	}
 }
 
