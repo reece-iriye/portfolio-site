@@ -1,12 +1,9 @@
 {
 	email {env.ACME_ACCOUNT}
-	acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}
 }
 
 reeceiriye.me {
-	tls {
-		protocols tls1.2 tls1.3
-	}
+	tls /etc/ssl/cloudflare-root.crt /etc/ssl/cloudflare-root.key
 
 
 	# --- Static files ---
