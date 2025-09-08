@@ -4,7 +4,7 @@
 
 reeceiriye.me {
 	tls /etc/ssl/cloudflare-root.crt /etc/ssl/cloudflare-root.key {
-		disable_ocsp_stapling true
+		ocsp_stapling off
 	}
 
 	# --- Static files ---
