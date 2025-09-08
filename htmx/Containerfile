@@ -16,7 +16,7 @@ RUN CGO_ENABLED=0 go build -o portfolio-server ./
 # ---- Runtime stage ----
 FROM alpine:edge
 
-RUN apk --no-cache add ca-certificates tzdata
+RUN apk --no-cache add ca-certificates tzdata curl
 
 WORKDIR /app
 
