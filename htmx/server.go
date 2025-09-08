@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/joho/godotenv"
 	"gopkg.in/gomail.v2"
@@ -36,17 +37,52 @@ func main() {
 
 	mux := http.NewServeMux()
 
+	staticDir := "./static/"
+
+	mux.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
+		if strings.Contains(r.URL.Path, "..") {
+			http.Error(w, "Invalid path", http.StatusBadRequest)
+			return
+		}
+
+		filePath := filepath.Join(staticDir, strings.TrimPrefix(r.URL.Path, "/static/"))
+
+		if _, err := os.Stat(filePath); os.IsNotExist(err) {
+			http.NotFound(w, r)
+			return
+		}
+
+		ext := strings.ToLower(filepath.Ext(r.URL.Path))
+
+		switch ext {
+		case ".css", ".js":
+			w.Header().Set("Cache-Control", "public, max-age=86400")
+			w.Header().Set("Expires", time.Now().Add(24*time.Hour).Format(http.TimeFormat))
+		case ".png", ".jpg", ".jpeg", ".gif", ".ico", ".svg", ".webp":
+			w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
+			w.Header().Set("Expires", time.Now().Add(365*24*time.Hour).Format(http.TimeFormat))
+		default:
+			w.Header().Set("Cache-Control", "public, max-age=86400")
+		}
+
+		w.Header().Set("X-Content-Type-Options", "nosniff")
+		w.Header().Set("Vary", "Accept-Encoding")
+
+		http.ServeFile(w, r, filePath)
+	})
+
+	// API routes
 	mux.HandleFunc("/", homeHandler)
 	mux.HandleFunc("/api/home", homeHandler)
 	mux.HandleFunc("/api/work-history", workHandler)
 	mux.HandleFunc("/api/metrics", metricsHandler)
 	mux.HandleFunc("/api/contact-me", contactHandler)
 	mux.HandleFunc("/api/contact", contactSubmitHandler)
+
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("OK"))
 	})
-
 	fmt.Println("HTMX server running on :8080...")
 	if err := http.ListenAndServe(":8080", mux); err != nil {
 		fmt.Println("Error starting server:", err)

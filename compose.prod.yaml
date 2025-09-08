@@ -44,7 +44,6 @@ services:
     volumes:
       - $PWD/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - $PWD/nginx/conf.d:/etc/nginx/conf.d:ro
-      - $PWD/htmx/static:/app/static:ro  # NGINX serves assets directly
       - $PWD/nginx/certs/cloudflare-origin-root-domain.crt:/etc/ssl/cloudflare-root.crt:ro
       - $PWD/nginx/certs/cloudflare-origin-root-domain.key:/etc/ssl/cloudflare-root.key:ro
       - $PWD/nginx/logs:/var/log/nginx
@@ -55,35 +54,6 @@ services:
         condition: service_healthy
       prometheus:
         condition: service_healthy
-
-  # caddy:
-  #   build:
-  #     context: $PWD/caddy
-  #     dockerfile: Containerfile
-  #   restart: unless-stopped
-  #   container_name: caddy
-  #   ports:
-  #     - "80:80"
-  #     - "443:443"
-  #   expose:
-  #     - "2019"  # expose port for /metrics for Prometheus
-  #   volumes:
-  #     - $PWD/caddy/Caddyfile:/etc/caddy/Caddyfile
-  #     - $PWD/caddy/caddy_data:/data
-  #     - $PWD/caddy/caddy_config:/config
-  #     - $PWD/htmx/static:/app/static:ro  # Caddy serves assets directly
-  #     - $PWD/caddy/certs/cloudflare-origin-root-domain.crt:/etc/ssl/cloudflare-root.crt:ro
-  #     - $PWD/caddy/certs/cloudflare-origin-root-domain.key:/etc/ssl/cloudflare-root.key:ro
-  #   environment:
-  #     - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
-  #     - ACME_ACCOUNT=${ACME_ACCOUNT}
-  #   depends_on:
-  #     htmx-server:
-  #       condition: service_healthy
-  #     grafana:
-  #       condition: service_healthy
-  #     prometheus:
-  #       condition: service_healthy
 
   htmx-server:
     build:
