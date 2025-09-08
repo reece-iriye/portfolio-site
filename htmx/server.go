@@ -41,11 +41,13 @@ func main() {
 	mux.HandleFunc("/", homeHandler)
 	mux.HandleFunc("/api/home", homeHandler)
 	mux.HandleFunc("/api/work-history", workHandler)
-	// mux.HandleFunc("/projects", projectsHandler)
-	// mux.HandleFunc("/speaking-engagements", speakingHandler)
 	mux.HandleFunc("/api/metrics", metricsHandler)
 	mux.HandleFunc("/api/contact-me", contactHandler)
 	mux.HandleFunc("/api/contact", contactSubmitHandler)
+	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("OK"))
+	})
 
 	fmt.Println("HTMX server running on :8080...")
 	if err := http.ListenAndServe(":8080", mux); err != nil {

@@ -9,6 +9,11 @@ services:
       - "9090"
     volumes:
       - $PWD/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   grafana:
     image: grafana/grafana:12.2.0-17449462949-ubuntu
@@ -23,6 +28,11 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
     volumes:
       - $PWD/grafana:/etc/grafana/provisioning/datasources
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   caddy:
     build:
@@ -42,13 +52,16 @@ services:
       - $PWD/htmx/static:/app/static:ro  # Caddy serves assets directly
       - $PWD/caddy/certs/cloudflare-origin-root-domain.crt:/etc/ssl/cloudflare-root.crt:ro
       - $PWD/caddy/certs/cloudflare-origin-root-domain.key:/etc/ssl/cloudflare-root.key:ro
-    depends_on:
-      - htmx-server
-      - grafana
-      - prometheus
     environment:
       - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
       - ACME_ACCOUNT=${ACME_ACCOUNT}
+    depends_on:
+      htmx-server:
+        condition: service_healthy
+      grafana:
+        condition: service_healthy
+      prometheus:
+        condition: service_healthy
 
   htmx-server:
     build:
@@ -67,9 +80,13 @@ services:
       - SMTP_PORT=${SMTP_PORT}
       - FROM_EMAIL=${FROM_EMAIL}
       - TO_EMAIL=${TO_EMAIL}
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
 volumes:
-  # Need persistent storage for TLS certs and ACME metadata for container restarts
   caddy_data:
-    external: true
   caddy_config:

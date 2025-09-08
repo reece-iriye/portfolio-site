@@ -14,50 +14,65 @@ reeceiriye.me {
 		rate_limit {
 			key {http.request.header.CF-Connecting-IP}{http.request.remote.host}
 			window 1m
-			events 10000
+			events 1000
 		}
 		header Cache-Control "public, max-age=86400"
 	}
 
 	# --- API endpoints (normal rate limits) ---
 	handle_path /api/home {
-		reverse_proxy htmx-portfolio:8080
+		reverse_proxy htmx-portfolio:8080 {
+			health_uri /health
+			health_interval 30s
+		}
 		rate_limit {
 			key {http.request.header.CF-Connecting-IP}{http.request.remote.host}
 			window 1m
-			events 100
+			events 60
 		}
 	}
 
 	handle_path /api/work-history {
-		reverse_proxy htmx-portfolio:8080
+		reverse_proxy htmx-portfolio:8080 {
+			health_uri /health
+			health_interval 30s
+		}
 		rate_limit {
 			key {http.request.header.CF-Connecting-IP}{http.request.remote.host}
 			window 1m
-			events 100
+			events 60
 		}
 	}
 
 	handle_path /api/metrics {
-		reverse_proxy htmx-portfolio:8080
+		reverse_proxy htmx-portfolio:8080 {
+			health_uri /health
+			health_interval 30s
+		}
 		rate_limit {
 			key {http.request.header.CF-Connecting-IP}{http.request.remote.host}
 			window 1m
-			events 100
+			events 60
 		}
 	}
 
 	handle_path /api/contact-me {
-		reverse_proxy htmx-portfolio:8080
+		reverse_proxy htmx-portfolio:8080 {
+			health_uri /health
+			health_interval 30s
+		}
 		rate_limit {
 			key {http.request.header.CF-Connecting-IP}{http.request.remote.host}
 			window 1m
-			events 100
+			events 60
 		}
 	}
 
 	handle_path /api/contact {
-		reverse_proxy htmx-portfolio:8080
+		reverse_proxy htmx-portfolio:8080 {
+			health_uri /health
+			health_interval 30s
+		}
 		rate_limit {
 			key {http.request.header.CF-Connecting-IP}{http.request.remote.host}
 			window 1h
@@ -67,22 +82,28 @@ reeceiriye.me {
 
 	handle / {
 		rewrite * /api/home
-		reverse_proxy htmx-portfolio:8080
+		reverse_proxy htmx-portfolio:8080 {
+			health_uri /health
+			health_interval 30s
+		}
 		rate_limit {
 			key {http.request.header.CF-Connecting-IP}{http.request.remote.host}
 			window 1m
-			events 100
+			events 60
 		}
 	}
 
 	handle {
 		@prettyURL not path /api/* /static/*
 		rewrite @prettyURL /api{uri}  # prepend /api to whatever the path is
-		reverse_proxy htmx-portfolio:8080
+		reverse_proxy htmx-portfolio:8080 {
+			health_uri /health
+			health_interval 30s
+		}
 		rate_limit {
 			key {http.request.header.CF-Connecting-IP}{http.request.remote.host}
 			window 1m
-			events 100
+			events 60
 		}
 	}
 }
