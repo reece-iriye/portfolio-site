@@ -3,8 +3,9 @@
 }
 
 reeceiriye.me {
-	tls /etc/ssl/cloudflare-root.crt /etc/ssl/cloudflare-root.key
-
+	tls /etc/ssl/cloudflare-root.crt /etc/ssl/cloudflare-root.key {
+		ocscp_stapling off
+	}
 
 	# --- Static files ---
 	handle /static/* {
