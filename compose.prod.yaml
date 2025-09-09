@@ -54,6 +54,8 @@ services:
         condition: service_healthy
       prometheus:
         condition: service_healthy
+    watch:
+      - path: $PWD/nginx
 
   htmx-server:
     build:
