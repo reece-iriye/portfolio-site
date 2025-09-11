@@ -78,21 +78,42 @@ Create a service account in your [Google Cloud Console](https://console.cloud.go
 Click **Create Service Account** and name it `githubactions-deploy-user`. Assign the `IAP-Secured Tunnel User` role to the newly created user. Go to the **Keys** tab, then **Add Key -> Create new key -> JSON**. Download the JSON key file, which will be needed for Github Actions secrets. The reason why this needs to be done is to allow these GitHub Actions steps in the `deploy-gcp-vm` job to work:
 
 ```yaml
-- name: Update Git Repository in VM over IAP
-  run: |
-    gcloud compute ssh githubactions-deploy-user@${{ secrets.GCP_INSTANCE_NAME }} \
-      --tunnel-through-iap \
-      --project=${{ secrets.GCP_PROJECT_ID }} \
-      --zone=${{ secrets.GCP_ZONE }} \
-      --command="cd ~/portfolio-site && git pull origin main"
+- name: Authenticate to Google Cloud
+  uses: google-github-actions/auth@v1
+  with:
+    credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-- name: Update Containers on VM over IAP
+- name: Set up GCP SDK
+  uses: google-github-actions/setup-gcloud@v1
+
+- name: Update Git Repository and Containers in VM over IAP
   run: |
+    echo "SMTP_KEY=${{ secrets.SMTP_KEY }}" > .env.prod
+    echo "SMTP_EMAIL=${{ secrets.SMTP_EMAIL }}" >> .env.prod
+    echo "SMTP_HOST=${{ secrets.SMTP_HOST }}" >> .env.prod
+    echo "SMTP_PORT=${{ secrets.SMTP_PORT }}" >> .env.prod
+    echo "FROM_EMAIL=${{ secrets.FROM_EMAIL }}" >> .env.prod
+    echo "TO_EMAIL=${{ secrets.TO_EMAIL }}" >> .env.prod
+
+    echo "CLOUDFLARE_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }}" >> .env.prod
+    echo "ACME_ACCOUNT=${{ secrets.ACME_ACCOUNT }}" >> .env.prod
+
+    gcloud compute scp .env.prod githubactions-deploy-user@${{ secrets.GCP_INSTANCE_NAME }}:~/portfolio-site/.env.prod \
+      --tunnel-through-iap \
+      --project=${{ secrets.GCP_PROJECT_ID }} \
+      --zone=${{ secrets.GCP_ZONE }}
+
     gcloud compute ssh githubactions-deploy-user@${{ secrets.GCP_INSTANCE_NAME }} \
       --tunnel-through-iap \
       --project=${{ secrets.GCP_PROJECT_ID }} \
       --zone=${{ secrets.GCP_ZONE }} \
-      --command="cd ~/portfolio-site && docker compose pull && docker compose -f compose.prod.yaml up -d"
+      --command="cd ~/portfolio-site && \
+        git pull origin main && \
+        docker compose --env-file .env.prod -f compose.prod.yaml pull && \
+        docker compose --env-file .env.prod -f compose.prod.yaml build && \
+        docker compose --env-file .env.prod -f compose.prod.yaml up -d"
+
+    shred -u .env.prod
 ```
 
 Now, the following secrets need to be added to the GitHub repository. Click on the **Settings** tab, then **Secrets and Variables -> Actions**, then configure the following secrets:
