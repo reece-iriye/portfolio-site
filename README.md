@@ -2,6 +2,8 @@
 
 Here is my portfolio. I am deloying this on a Google Cloud Platform VM using Docker and on-prem on a 2-Node Raspberry Pi homelab using Kubernetes.
 
+![Homepage](https://raw.githubusercontent.com/reece-iriye/portfolio-site/main/assets/root-readme/homepage.png)
+
 ## HTMX Portfolio Server
 
 ### Set-Up
@@ -37,7 +39,6 @@ Now, all code changes will be reflected in the development server immediately.
 
 
 ## Deploy Docker Compose Production Environment on GCP Virtual Machine
-
 
 
 ```bash
@@ -175,7 +176,7 @@ This application uses Cloudflare Origin SSL certificates to ensure secure HTTPS 
 4. Choose **RSA (2048)** for broader compatibility
 5. Set the certificate validity (up to 15 years)
 6. Download both files:
-   - **Certificate** → save as `cloudflare-origin.crt`
+   - **Certificate** → save as `cloudflare-origin.pem`
    - **Private Key** → save as `cloudflare-origin.key`
 
 #### Certificate Deployment
@@ -183,17 +184,17 @@ This application uses Cloudflare Origin SSL certificates to ensure secure HTTPS 
 The SSL certificates are managed through a secure directory structure in the repository inside the `caddy/certs/` directory (all files matching `*.key` pattern in any directory is in `.gitignore`):
 
 ```
-caddy/certs/
-├── cloudflare-origin-root-domain.crt   # Public certificate (committed to repo)
-└── cloudflare-origin-root-domain.key   # Private key (gitignored, added manually)
+nginx/certs/
+├── cloudflare-origin.pem    # Public certificate (committed to repo)
+└── cloudflare-origin.key    # Private key (gitignored, added manually)
 ```
 
 **On your development machine:**
 ```bash
 # Create the certs directory and add the public certificate
 mkdir certs
-cp ~/Downloads/cloudflare-origin.crt ./certs/cloudflare-origin-root-domain.crt
-git add certs/cloudflare-origin.crt certs/.gitignore
+cp ~/Downloads/cloudflare-origin.pem ./certs/cloudflare-origin.pem
+git add certs/cloudflare-origin.pem certs/.gitignore
 git commit -m "Add Cloudflare origin certificate"
 ```
 
@@ -205,8 +206,8 @@ cd /path/to/repo/portfolio-site
 cp ~/cloudflare-origin.key ./certs/cloudflare-origin-root-domain.key
 
 # Set proper file permissions
-chmod 600 ./certs/cloudflare-origin-root-domain.key
-chmod 644 ./certs/cloudflare-origin-root-domain.crt
+chmod 600 ./certs/cloudflare-origin.key
+chmod 644 ./certs/cloudflare-origin.pem
 
 # Verify the private key is not tracked by git
 git status  # Should not show the .key file
@@ -225,13 +226,4 @@ Ensure your Cloudflare SSL/TLS settings are configured correctly:
 
 #### GitHub Actions Integration
 
-The private key must be manually added to the VM as it's not stored in version control for security reasons. The GitHub Actions workflow will automatically handle certificate mounting through Docker volumes:
-
-```yaml
-volumes:
-  - $PWD/caddy/certs/cloudflare-origin-root-domain.crt:/etc/ssl/cloudflare-root.crt:ro
-  - $PWD/caddy/certs/cloudflare-origin-root-domain.key:/etc/ssl/cloudflare-root.key:ro
-```
-
-The `Caddyfile` maps to the certificate and private-key file inside of TLS settings.
-
+The private key must be manually added to the VM as it's not stored in version control for security reasons. The GitHub Actions workflow will automatically handle certificates by updating the `nginx` image created from `nginx/Containerfile` if `nginx/certs/cloudflare-origin.pem` changes on the GitHub repository or `nginx/certs/cloudflare-origin.key` is updated directly on the Virtual Machine. `nginx/conf.d/default.conf` maps to the certificate and private-key file inside of TLS settings.
