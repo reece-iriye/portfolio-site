@@ -48,6 +48,8 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    expose:
+      - "8080"
     volumes:
       - $PWD/nginx/logs:/var/log/nginx
     depends_on:
