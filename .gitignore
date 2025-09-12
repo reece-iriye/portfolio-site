@@ -8,3 +8,7 @@
 
 # Private key
 **/*.key
+
+# Logs
+**/logs/
+**/.log
