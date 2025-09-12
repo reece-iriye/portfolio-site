@@ -32,7 +32,8 @@ services:
       - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
       - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/dashboards/node-exporter.json
     volumes:
-      - $PWD/grafana:/etc/grafana/provisioning/datasources
+      - $PWD/grafana/provisioning:/etc/grafana/provisioning
+      - grafana-storage:/var/lib/grafana
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
       interval: 30s
@@ -137,3 +138,4 @@ services:
 
 volumes:
   nginx_logs:
+  grafana-storage:
