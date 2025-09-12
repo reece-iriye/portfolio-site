@@ -6,7 +6,7 @@ global:
 
 scrape_configs:
   - job_name: "nginx_exporter"
-    metrics_path: /stub_status
+    metrics_path: /metrics
     static_configs:
       - targets: ["nginx-exporter:9113"]
 
@@ -15,7 +15,7 @@ scrape_configs:
     static_configs:
       - targets: ["cadvisor:8080"]
 
-  - job_name: "node_exporter"
+  - job_name: "node"
     metrics_path: /metrics
     static_configs:
       - targets: ["node-exporter:9100"]
