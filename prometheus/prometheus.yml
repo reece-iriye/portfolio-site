@@ -5,10 +5,10 @@ global:
   evaluation_interval: "30s"
 
 scrape_configs:
-  - job_name: "nginx_exporter"
+  - job_name: "nginx-lua-logs"
     metrics_path: /metrics
     static_configs:
-      - targets: ["nginx-exporter:9113"]
+      - targets: ["nginx:9145"]
 
   - job_name: "cadvisor"
     metrics_path: /metrics

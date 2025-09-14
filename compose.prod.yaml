@@ -30,7 +30,7 @@ services:
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
       - GF_USERS_ALLOW_SIGN_UP=false
       - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
-      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/dashboards/node-exporter.json
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/dashboards/nginx-performance.json
     volumes:
       - $PWD/grafana/provisioning:/etc/grafana/provisioning
       - grafana-storage:/var/lib/grafana
@@ -51,31 +51,18 @@ services:
       - "443:443"
     expose:
       - "8080"
+      - "9145"
     volumes:
       - $PWD/nginx/logs:/var/log/nginx
     depends_on:
-      htmx-server:
-        condition: service_healthy
-      grafana:
-        condition: service_healthy
-      prometheus:
-        condition: service_healthy
+      - htmx-server
+      - grafana
+      - prometheus
     healthcheck:
       test: ["CMD", "nginx", "-t"]
       interval: 30s
       timeout: 10s
       retries: 3
-
-  nginx-exporter:
-    image: nginx/nginx-prometheus-exporter:1.4
-    container_name: nginx-exporter
-    restart: unless-stopped
-    command:
-      - "--nginx.scrape-uri=http://nginx:8080/stub_status"
-    expose:
-      - "9113"
-    depends_on:
-      - nginx
 
   node-exporter:
     image: prom/node-exporter:v1.9.1
@@ -90,11 +77,6 @@ services:
       - '--path.procfs=/host/proc'
       - '--path.sysfs=/host/sys'
       - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($|/)'
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9100/metrics || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
   cadvisor:
     image: bitnami/cadvisor:0.53.0-debian-12-r9
@@ -106,11 +88,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/ || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
   htmx-server:
     build:
