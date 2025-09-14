@@ -54,6 +54,8 @@ services:
       - "9145"
     volumes:
       - $PWD/nginx/logs:/var/log/nginx
+      - $PWD/nginx/certs/cloudflare-origin.pem:/etc/ssl/cloudflare-origin.pem:ro
+      - $PWD/nginx/certs/cloudflare-origin.key:/etc/ssl/cloudflare-origin.key:ro
     depends_on:
       - htmx-server
       - grafana
