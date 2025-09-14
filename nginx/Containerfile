@@ -1,5 +1,7 @@
 FROM openresty/openresty:1.27.1.2-4-alpine-fat
 
+RUN addgroup -g 101 -S nginx && adduser -S -D -H -u 101 -G nginx nginx
+
 RUN apk add --no-cache \
     lua5.1 \
     lua5.1-dev \
