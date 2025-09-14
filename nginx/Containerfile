@@ -12,8 +12,6 @@ RUN apk add --no-cache \
     pcre-dev \
     zlib-dev \
     curl \
-    geoip \
-    geoip-dev
 
 RUN luarocks-5.1 install lua-resty-http
 RUN luarocks-5.1 install luasocket
@@ -21,9 +19,6 @@ RUN luarocks-5.1 install luasocket
 RUN mkdir -p /usr/local/openresty/lualib/prometheus
 RUN mkdir -p /etc/nginx/lua
 RUN mkdir -p /var/lib/geoip
-
-# License grabbed for free sign-up
-COPY geoip/GeoLite2-City.mmdb /var/lib/geoip/ 2>/dev/null || echo "GeoIP database not found - please download from MaxMind"
 
 COPY lua/prometheus.lua /usr/local/openresty/lualib/prometheus/
 COPY lua/geoip.lua /etc/nginx/lua/
