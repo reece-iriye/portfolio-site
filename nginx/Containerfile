@@ -11,7 +11,7 @@ RUN apk add --no-cache \
     openssl-dev \
     pcre-dev \
     zlib-dev \
-    curl \
+    curl
 
 RUN luarocks-5.1 install lua-resty-http
 RUN luarocks-5.1 install luasocket
