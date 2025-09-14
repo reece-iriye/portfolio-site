@@ -1,9 +1,9 @@
-FROM nginx:1.29-alpine
+FROM openresty/openresty:1.27.1.2-4-alpine-fat
 
 RUN apk add --no-cache \
     lua5.1 \
     lua5.1-dev \
-    luarocks5.1 \
+    luarocks \
     git \
     gcc \
     musl-dev \
@@ -13,22 +13,21 @@ RUN apk add --no-cache \
     zlib-dev \
     curl
 
-RUN luarocks-5.1 install lua-resty-http
-RUN luarocks-5.1 install luasocket
+RUN luarocks install lua-resty-http \
+ && luarocks install luasocket
 
-RUN mkdir -p /usr/local/openresty/lualib/prometheus
-RUN mkdir -p /etc/nginx/lua
-RUN mkdir -p /var/lib/geoip
+RUN mkdir -p /usr/local/openresty/lualib/prometheus \
+    /etc/nginx/lua \
+    /var/lib/geoip \
+    /var/log/nginx
 
 COPY lua/prometheus.lua /usr/local/openresty/lualib/prometheus/
 COPY lua/geoip.lua /etc/nginx/lua/
 COPY lua/metrics.lua /etc/nginx/lua/
 
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY nginx.conf /usr/local/openresty/nginx/conf/nginx.conf
 COPY conf.d/ /etc/nginx/conf.d/
-
-RUN mkdir -p /var/log/nginx
 
 EXPOSE 80 443 8080 9145
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["/usr/local/openresty/bin/openresty", "-g", "daemon off;"]
