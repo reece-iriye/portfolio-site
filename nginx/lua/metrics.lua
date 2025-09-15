@@ -104,6 +104,10 @@ function _M.categorize_request(uri, method)
 end
 
 function _M.timing_bucket(duration)
+	if not duration or type(duration) ~= "number" then
+		return "unknown"
+	end
+
 	if duration <= 0.001 then
 		return "ultra-fast"
 	elseif duration <= 0.01 then
@@ -122,6 +126,10 @@ function _M.timing_bucket(duration)
 end
 
 function _M.size_bucket(bytes)
+	if not bytes or type(bytes) ~= "number" then
+		return "unknown"
+	end
+
 	if bytes <= 1024 then
 		return "tiny" -- < 1KB
 	elseif bytes <= 10240 then
@@ -161,12 +169,13 @@ function _M.status_category(status_code)
 end
 
 function _M.parse_user_agent(ua)
-	if not ua then
+	if not ua or ua == "" then
 		return { browser = "unknown", os = "unknown", device = "unknown" }
 	end
 
 	local result = { browser = "unknown", os = "unknown", device = "unknown" }
 
+	-- Browser detection
 	if ua:match("Chrome/") and not ua:match("Edg/") then
 		result.browser = "Chrome"
 	elseif ua:match("Firefox/") then
@@ -177,13 +186,16 @@ function _M.parse_user_agent(ua)
 		result.browser = "Edge"
 	elseif ua:match("Opera/") or ua:match("OPR/") then
 		result.browser = "Opera"
+	elseif ua:match("bot") or ua:match("Bot") or ua:match("crawler") or ua:match("spider") then
+		result.browser = "bot"
 	end
 
+	-- OS detection
 	if ua:match("Windows NT") then
 		result.os = "Windows"
 	elseif ua:match("Mac OS X") then
 		result.os = "macOS"
-	elseif ua:match("Linux") then
+	elseif ua:match("Linux") and not ua:match("Android") then
 		result.os = "Linux"
 	elseif ua:match("Android") then
 		result.os = "Android"
@@ -191,6 +203,7 @@ function _M.parse_user_agent(ua)
 		result.os = "iOS"
 	end
 
+	-- Device detection
 	if ua:match("Mobile") or ua:match("Android") or ua:match("iPhone") then
 		result.device = "mobile"
 	elseif ua:match("Tablet") or ua:match("iPad") then
@@ -205,7 +218,8 @@ end
 function _M.check_rate_limit(key, limit, window, dict_name)
 	local dict = ngx.shared[dict_name or "rate_limit"]
 	if not dict then
-		return false
+		ngx.log(ngx.ERR, "Rate limit dictionary not found: ", dict_name or "rate_limit")
+		return true -- Allow by default if dict not found
 	end
 
 	local current_time = ngx.time()
@@ -217,39 +231,53 @@ function _M.check_rate_limit(key, limit, window, dict_name)
 		return false
 	end
 
-	dict:incr(rate_key, 1, 0, window + 1)
+	-- Use incr with expiry
+	local new_val, err = dict:incr(rate_key, 1, 0, window + 1)
+	if not new_val then
+		ngx.log(ngx.ERR, "Failed to increment rate limit counter: ", err)
+		return true -- Allow by default on error
+	end
+
 	return true
 end
 
 function _M.safe_json_encode(data)
-	local ok, result = pcall(require("cjson").encode, data)
-	if ok then
-		return result
-	else
-		if type(data) == "table" then
-			local parts = {}
-			for k, v in pairs(data) do
-				table_insert(parts, string_format('"%s":"%s"', tostring(k), tostring(v)))
-			end
-			return "{" .. table_concat(parts, ",") .. "}"
-		else
-			return string_format('"%s"', tostring(data))
+	-- Try to load cjson first
+	local has_cjson, cjson = pcall(require, "cjson")
+	if has_cjson then
+		local ok, result = pcall(cjson.encode, data)
+		if ok then
+			return result
 		end
+	end
+
+	-- Fallback to simple string formatting
+	if type(data) == "table" then
+		local parts = {}
+		for k, v in pairs(data) do
+			local key_str = tostring(k):gsub('"', '\\"')
+			local val_str = tostring(v):gsub('"', '\\"')
+			table_insert(parts, string_format('"%s":"%s"', key_str, val_str))
+		end
+		return "{" .. table_concat(parts, ",") .. "}"
+	else
+		local safe_str = tostring(data):gsub('"', '\\"')
+		return string_format('"%s"', safe_str)
 	end
 end
 
 function _M.get_memory_usage()
+	local result = {
+		lua_memory = collectgarbage("count") * 1024,
+		version = _VERSION,
+	}
+
 	if jit then
-		return {
-			lua_memory = collectgarbage("count") * 1024,
-			jit_memory = jit.status() and "enabled" or "disabled",
-		}
-	else
-		return {
-			lua_memory = collectgarbage("count") * 1024,
-			version = _VERSION,
-		}
+		result.jit_version = jit.version
+		result.jit_enabled = jit.status()
 	end
+
+	return result
 end
 
 function _M.safe_log(level, message, context)
@@ -261,13 +289,44 @@ function _M.safe_log(level, message, context)
 	}
 
 	local log_level = log_levels[level] or ngx.INFO
-	local log_message = tostring(message)
+	local log_message = tostring(message or "")
 
 	if context then
 		log_message = log_message .. " | Context: " .. _M.safe_json_encode(context)
 	end
 
 	ngx.log(log_level, log_message)
+end
+
+-- Utility function to sanitize strings for Prometheus labels
+function _M.sanitize_label_value(value)
+	if not value then
+		return "unknown"
+	end
+
+	local str = tostring(value)
+	-- Remove or replace problematic characters
+	str = str:gsub('[%c\r\n\t"]', "_") -- Replace control chars and quotes
+	str = str:gsub("^%s+", ""):gsub("%s+$", "") -- Trim whitespace
+
+	if str == "" then
+		return "unknown"
+	end
+
+	return str
+end
+
+-- Function to validate metric names
+function _M.validate_metric_name(name)
+	if not name or type(name) ~= "string" then
+		return false, "Metric name must be a string"
+	end
+
+	if not name:match("^[a-zA-Z_:][a-zA-Z0-9_:]*$") then
+		return false, "Invalid metric name format"
+	end
+
+	return true
 end
 
 return _M

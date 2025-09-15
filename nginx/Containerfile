@@ -27,6 +27,8 @@ COPY lua/prometheus.lua /usr/local/openresty/lualib/prometheus/
 COPY lua/geoip.lua /usr/local/openresty/lualib/prometheus/
 COPY lua/metrics.lua /usr/local/openresty/lualib/prometheus/
 
+COPY scripts/debug.sh /tmp/
+
 COPY nginx.conf /usr/local/openresty/nginx/conf/nginx.conf
 COPY conf.d/ /etc/nginx/conf.d/
 

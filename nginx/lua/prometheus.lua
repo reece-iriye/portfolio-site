@@ -43,7 +43,9 @@ function _M:counter(name, help, labels)
 		local parts = {}
 		for i, label in ipairs(self.labels) do
 			if values[i] then
-				table.insert(parts, label .. '="' .. tostring(values[i]):gsub('"', '\\"') .. '"')
+				-- Properly escape label values
+				local escaped_value = tostring(values[i]):gsub('"', '\\"'):gsub("\\", "\\\\")
+				table.insert(parts, label .. '="' .. escaped_value .. '"')
 			end
 		end
 		return table.concat(parts, ",")
@@ -80,7 +82,10 @@ function _M:histogram(name, help, labels, buckets)
 					bucket_key = base_key .. '_bucket{le="' .. bucket .. '"}'
 				end
 				local current = self.prom.dict:get(bucket_key) or 0
-				self.prom.dict:set(bucket_key, current + 1)
+				local ok, err = self.prom.dict:set(bucket_key, current + 1)
+				if not ok then
+					ngx.log(ngx.ERR, "Failed to set histogram bucket: " .. (err or "unknown error"))
+				end
 			end
 		end
 
@@ -90,24 +95,34 @@ function _M:histogram(name, help, labels, buckets)
 			inf_key = base_key .. '_bucket{le="+Inf"}'
 		end
 		local current_inf = self.prom.dict:get(inf_key) or 0
-		self.prom.dict:set(inf_key, current_inf + 1)
+		local ok, err = self.prom.dict:set(inf_key, current_inf + 1)
+		if not ok then
+			ngx.log(ngx.ERR, "Failed to set histogram inf bucket: " .. (err or "unknown error"))
+		end
 
 		-- Count total
 		local count_key = base_key .. "_count" .. label_str
 		local current_count = self.prom.dict:get(count_key) or 0
-		self.prom.dict:set(count_key, current_count + 1)
+		ok, err = self.prom.dict:set(count_key, current_count + 1)
+		if not ok then
+			ngx.log(ngx.ERR, "Failed to set histogram count: " .. (err or "unknown error"))
+		end
 
 		-- Sum
 		local sum_key = base_key .. "_sum" .. label_str
 		local current_sum = self.prom.dict:get(sum_key) or 0
-		self.prom.dict:set(sum_key, current_sum + value)
+		ok, err = self.prom.dict:set(sum_key, current_sum + value)
+		if not ok then
+			ngx.log(ngx.ERR, "Failed to set histogram sum: " .. (err or "unknown error"))
+		end
 	end
 
 	function metric:format_labels(values)
 		local parts = {}
 		for i, label in ipairs(self.labels) do
 			if values[i] then
-				table.insert(parts, label .. '="' .. tostring(values[i]):gsub('"', '\\"') .. '"')
+				local escaped_value = tostring(values[i]):gsub('"', '\\"'):gsub("\\", "\\\\")
+				table.insert(parts, label .. '="' .. escaped_value .. '"')
 			end
 		end
 		return table.concat(parts, ",")
@@ -156,7 +171,8 @@ function _M:gauge(name, help, labels)
 		local parts = {}
 		for i, label in ipairs(self.labels) do
 			if values[i] then
-				table.insert(parts, label .. '="' .. tostring(values[i]):gsub('"', '\\"') .. '"')
+				local escaped_value = tostring(values[i]):gsub('"', '\\"'):gsub("\\", "\\\\")
+				table.insert(parts, label .. '="' .. escaped_value .. '"')
 			end
 		end
 		return table.concat(parts, ",")
@@ -171,6 +187,8 @@ function _M:collect()
 
 	-- Get all keys from the dictionary
 	local keys = self.dict:get_keys(0)
+	ngx.log(ngx.INFO, "Collecting metrics: found ", #keys, " keys in dictionary")
+
 	local output = {}
 	local help_output = {}
 	local type_output = {}
@@ -179,13 +197,19 @@ function _M:collect()
 	local metric_groups = {}
 
 	for _, key in ipairs(keys) do
-		local value = self.dict:get(key)
-		if value then
-			local base_name = key:match("^([^{_]+)")
-			if not metric_groups[base_name] then
-				metric_groups[base_name] = {}
+		-- Skip internal keys
+		if not key:match("^_") then
+			local value = self.dict:get(key)
+			if value then
+				ngx.log(ngx.DEBUG, "Key: ", key, " | Value: ", value)
+				local base_name = key:match("^([^{_]+)")
+				if not metric_groups[base_name] then
+					metric_groups[base_name] = {}
+				end
+				table.insert(metric_groups[base_name], { key = key, value = value })
+			else
+				ngx.log(ngx.WARN, "Key exists but value is nil: ", key)
 			end
-			table.insert(metric_groups[base_name], { key = key, value = value })
 		end
 	end
 
@@ -195,10 +219,12 @@ function _M:collect()
 		if metric_info then
 			table.insert(help_output, "# HELP " .. name .. " " .. (metric_info.help or ""))
 			table.insert(type_output, "# TYPE " .. name .. " " .. metric_info.type)
+			ngx.log(ngx.DEBUG, "Adding HELP/TYPE for metric: ", name)
 		end
 
 		for _, metric in ipairs(metrics) do
 			table.insert(output, metric.key .. " " .. metric.value)
+			ngx.log(ngx.DEBUG, "Output metric: ", metric.key, " = ", metric.value)
 		end
 	end
 
@@ -214,6 +240,7 @@ function _M:collect()
 		table.insert(result, line)
 	end
 
+	ngx.log(ngx.INFO, "Metrics output ready, total lines: ", #result)
 	ngx.say(table.concat(result, "\n"))
 end
 
