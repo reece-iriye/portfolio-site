@@ -24,8 +24,8 @@ RUN mkdir -p /usr/local/openresty/lualib/prometheus \
     /var/log/nginx
 
 COPY lua/prometheus.lua /usr/local/openresty/lualib/prometheus/
-COPY lua/geoip.lua /etc/nginx/lua/
-COPY lua/metrics.lua /etc/nginx/lua/
+COPY lua/geoip.lua /usr/local/openresty/lualib/prometheus/
+COPY lua/metrics.lua /usr/local/openresty/lualib/prometheus/
 
 COPY nginx.conf /usr/local/openresty/nginx/conf/nginx.conf
 COPY conf.d/ /etc/nginx/conf.d/
