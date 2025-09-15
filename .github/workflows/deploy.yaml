@@ -58,6 +58,8 @@ jobs:
             --tunnel-through-iap \
             --project=${{ secrets.GCP_PROJECT_ID }} \
             --zone=${{ secrets.GCP_ZONE }}
+          
+          shred -u ~/portfolio-site/.env.prod
 
           gcloud compute ssh githubactions-deploy-user@${{ secrets.GCP_INSTANCE_NAME }} \
             --tunnel-through-iap \
@@ -69,5 +71,3 @@ jobs:
               docker compose --env-file .env.prod -f compose.prod.yaml build && \
               docker compose --env-file .env.prod -f compose.prod.yaml up -d && \
               shred -u .env.prod"
-
-          shred -u ~/portfolio-site/.env.prod
