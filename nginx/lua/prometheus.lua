@@ -43,7 +43,6 @@ function _M:counter(name, help, labels)
 		local parts = {}
 		for i, label in ipairs(self.labels) do
 			if values[i] then
-				-- Properly escape label values
 				local escaped_value = tostring(values[i]):gsub('"', '\\"'):gsub("\\", "\\\\")
 				table.insert(parts, label .. '="' .. escaped_value .. '"')
 			end
@@ -74,7 +73,6 @@ function _M:histogram(name, help, labels, buckets)
 			label_str = "{" .. self:format_labels(label_values) .. "}"
 		end
 
-		-- Count bucket
 		for _, bucket in ipairs(self.buckets) do
 			if value <= bucket then
 				local bucket_key = base_key .. "_bucket" .. label_str:gsub("}", ',le="' .. bucket .. '"}')
@@ -89,7 +87,6 @@ function _M:histogram(name, help, labels, buckets)
 			end
 		end
 
-		-- +Inf bucket
 		local inf_key = base_key .. "_bucket" .. label_str:gsub("}", ',le="+Inf"}')
 		if label_str == "" then
 			inf_key = base_key .. '_bucket{le="+Inf"}'
@@ -108,7 +105,6 @@ function _M:histogram(name, help, labels, buckets)
 			ngx.log(ngx.ERR, "Failed to set histogram count: " .. (err or "unknown error"))
 		end
 
-		-- Sum
 		local sum_key = base_key .. "_sum" .. label_str
 		local current_sum = self.prom.dict:get(sum_key) or 0
 		ok, err = self.prom.dict:set(sum_key, current_sum + value)
@@ -185,7 +181,6 @@ end
 function _M:collect()
 	ngx.header.content_type = "text/plain; version=0.0.4; charset=utf-8"
 
-	-- Get all keys from the dictionary
 	local keys = self.dict:get_keys(0)
 	ngx.log(ngx.INFO, "Collecting metrics: found ", #keys, " keys in dictionary")
 
@@ -193,11 +188,9 @@ function _M:collect()
 	local help_output = {}
 	local type_output = {}
 
-	-- Group metrics by name for proper output format
 	local metric_groups = {}
 
 	for _, key in ipairs(keys) do
-		-- Skip internal keys
 		if not key:match("^_") then
 			local value = self.dict:get(key)
 			if value then
@@ -213,7 +206,6 @@ function _M:collect()
 		end
 	end
 
-	-- Output metrics
 	for name, metrics in pairs(metric_groups) do
 		local metric_info = self.metrics[name]
 		if metric_info then
@@ -228,7 +220,6 @@ function _M:collect()
 		end
 	end
 
-	-- Combine all output
 	local result = {}
 	for _, line in ipairs(help_output) do
 		table.insert(result, line)
