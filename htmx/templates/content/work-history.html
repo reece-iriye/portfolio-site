@@ -43,56 +43,38 @@
 
     </div>
 
-    <!-- Right side timeline content -->
     <div class="timeline-content-area">
       <div class="timeline-line"></div>
 
-      <!-- Verizon Experience -->
       <div class="timeline-item">
         <div class="timeline-content">
           <img src="/static/assets/verizon-logo.svg" alt="Verizon" class="company-logo">
           <h3>Network Engineer I - 5G/4G Core Operations</h3>
           <span class="timeline-date">Jun 2024 - Present</span>
           <ul class="accomplishments">
-            <li>Own SRE & DevOps for Verizon's 5G Core Service Communication Proxy (SCP) & Network
-              Repository Function (NRF)—Kubernetes/Openshift-native NF's processing 40M+
-              subscriber devices and 1 billion peak req/hr across U.S.</li>
-            <li>Overtook leadership responsibilities for 2 Distinguished Engineers who left the team to
-              take over SCP & NRF, maintaining 100% application uptime and staying on-schedule with 6
-              major projects</li>
-            <li>Triage 1–3 5G downtime incidents weekly using Kubernetes-level Grafana,
-              Prometheus, and Istio telemetry via SCP to summarize 5G Core traffic trends and direct
-              performance & operations teams to root cause</li>
-            <li>Designed and implementing on-prem Kubernetes multi-cluster SCP capacity scaling
-              framework to enable 500% traffic growth while improving debugging and traceability
-              through partitioning traffic by ingress-traffic type</li>
-            <li>Developed and patenting a DNS Edge mapping solution to SCP & NRF applications,
-              cutting future resource requirements for capacity buildouts by 80% and
-              accelerating deployment timelines by 2+ months
+            <li>Directed largest 5G outage bridge in 2025 impacting customers nationwide; restored traffic identifying
+              impacted Kubernetes clusters and rebooting critical apps for minimum viable functionality first, then
+              redundancy</li>
+            <li>Cut Prometheus metric cardinality by 98.6% for Kubernetes-deployed 5G Core applications, directly
+              averting a $3.4M vendor contract expansion and eliminating ~70% of reporting lag</li>
+            <li>Own SRE & DevOps for Verizon’s 5G Core Service Communication Proxy (SCP) & Network Repository Function
+              (NRF)—Kubernetes/Openshift-native NF’s processing 40M+ subscriber devices and 1 billion peak req/hr across
+              U.S.</li>
+            <li>Replaced legacy Kubernetes CRD with Terraform to manage Infoblox DNS entry state for 5G Core SCP & NRF,
+              eliminating 100% of buggy workloads and simplifying DNS lifecycle management</li>
+            <li>Built Python API detecting 1,000+ 4G routing misconfigurations, preventing outage scenarios valued at
+              $200K+ each</li>
+            <li>Patenting DNS Edge mapping solution for SCP/NRF involving CNAME records, cutting future capacity
+              buildout resource needs by 80% and accelerating deployment efforts by 2+ months</li>
+            <li>Designed & implementing on-prem Kubernetes multi-cluster scaling framework for SCP, enabling 500%
+              traffic growth and improving debugging fidelity through partitioning ingress traffic by client origination
             </li>
-            <li>Leading Webscale 1.5 migrations for SCP within Verizon Cloud Platform resource parameters, orchestrating
-              Helm upgrades and zero-downtime DNS-based traffic shifts & coordinating plan with similar
-              structure for NRF & SLF applications</li>
-            <li>Built Python tool to identify 1,000+ legacy 4G routing misconfigs, stopping outage
-              scenarios valued around $200k each</li>
-            <li>Manage Layer 7 networking for SCP & NRF with Istio service mesh,
-              automating process with Python to add new FQDN's to service mesh
-              manifests—cutting ~4 hours off error-prone manual process building Kubernetes CRD
-              manifests
-            </li>
-            <li>Created Grafana and Kibana dashboards for SCP/NRF OpenShift NF's to surface ingress
-              traffic by client, reducing triage time by 30% and informing org-wide capacity planning
-            </li>
-            <li>Migrated scattered BASH, Python, & Golang scripts and Kubernetes
-              manifests to GitLab, speeding on-boarding process</li>
-            <li>Mentor and upskill a cross-functional team of Distinguished, Principal, and Senior Engineers plus Oracle
-              Resident Engineers and interns on 5G Core platform operations, maintenance windows, and incident response
-              best practices</li>
+            <li>Automated Istio service mesh onboarding with Python, reducing manual config time by ~4+ hours per FQDN
+              batch and eliminating error-prone manual CRD edits</li>
           </ul>
         </div>
       </div>
 
-      <!-- Dialexa Experience -->
       <div class="timeline-item">
         <div class="timeline-content">
           <img src="/static/assets/dialexa-logo.png" alt="Dialexa an IBM Company" class="company-logo">
@@ -106,7 +88,6 @@
         </div>
       </div>
 
-      <!-- Previous Role Example -->
       <div class="timeline-item">
         <div class="timeline-content">
           <img src="/static/assets/NexPoint_Logo.png" alt="Company" class="company-logo">
@@ -118,6 +99,7 @@
           </ul>
         </div>
       </div>
+
     </div>
   </div>
 </section>
