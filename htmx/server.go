@@ -71,13 +71,16 @@ func main() {
 		http.ServeFile(w, r, filePath)
 	})
 
-	// API routes
 	mux.HandleFunc("/", homeHandler)
 	mux.HandleFunc("/api/home", homeHandler)
 	mux.HandleFunc("/api/work-history", workHandler)
-	mux.HandleFunc("/api/metrics", metricsHandler)
 	mux.HandleFunc("/api/contact-me", contactHandler)
 	mux.HandleFunc("/api/contact", contactSubmitHandler)
+
+	mux.HandleFunc("/home", homeHandler)
+	mux.HandleFunc("/work-history", workHandler)
+	mux.HandleFunc("/contact-me", contactHandler)
+	mux.HandleFunc("/contact", contactSubmitHandler)
 
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -90,11 +93,9 @@ func main() {
 	}
 }
 
-// loadTemplates pre-parses all templates into memory
 func loadTemplates() error {
 	templates.content = make(map[string]*template.Template)
 
-	// Load layout
 	layoutPath := filepath.Join("templates", "layout.html")
 	layout, err := template.ParseFiles(layoutPath)
 	if err != nil {
@@ -102,7 +103,6 @@ func loadTemplates() error {
 	}
 	templates.layout = layout
 
-	// Load all content templates
 	contentDir := filepath.Join("templates", "content")
 	files, err := os.ReadDir(contentDir)
 	if err != nil {
