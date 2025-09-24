@@ -9,11 +9,9 @@ RUN mkdir -p /etc/grafana/provisioning/datasources \
 COPY ./provisioning/datasources/ /etc/grafana/provisioning/datasources/
 COPY ./provisioning/dashboards/ /etc/grafana/provisioning/dashboards/
 
-COPY ./provisioning/dashboards/dashboards/*.json /var/lib/grafana/dashboards/
+RUN chown -R 472:0 /etc/grafana/provisioning /var/lib/grafana/
 
-RUN chown -R 472:0 /etc/grafana/provisioning /var/lib/grafana/dashboards
-
-RUN chmod -R 755 /etc/grafana/provisioning /var/lib/grafana/dashboards
+RUN chmod -R 755 /etc/grafana/provisioning /var/lib/grafana/
 
 USER 472
 
