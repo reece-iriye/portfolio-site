@@ -3,17 +3,19 @@ FROM grafana/grafana:12.2.0-17449462949-ubuntu
 USER root
 
 RUN mkdir -p /etc/grafana/provisioning/datasources \
-    && mkdir -p /etc/grafana/provisioning/dashboards
+    && mkdir -p /etc/grafana/provisioning/dashboards \
+    && mkdir -p /var/lib/grafana/dashboards
 
 COPY ./provisioning/datasources/ /etc/grafana/provisioning/datasources/
 COPY ./provisioning/dashboards/ /etc/grafana/provisioning/dashboards/
 
 COPY ./provisioning/dashboards/dashboards/*.json /var/lib/grafana/dashboards/
 
-RUN chown -R grafana:grafana /etc/grafana/provisioning \
-    && chown -R grafana:grafana /var/lib/grafana/dashboards
+RUN chown -R 472:0 /etc/grafana/provisioning /var/lib/grafana/dashboards
 
-USER grafana
+RUN chmod -R 755 /etc/grafana/provisioning /var/lib/grafana/dashboards
+
+USER 472
 
 EXPOSE 3000
 
