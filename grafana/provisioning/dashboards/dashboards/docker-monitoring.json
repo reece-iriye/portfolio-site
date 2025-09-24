@@ -1,41 +1,4 @@
 {
-  "__inputs": [
-    {
-      "name": "DS_GRAFANACLOUD-SHIZUN-PROM",
-      "label": "grafanacloud-shizun-prom",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "prometheus",
-      "pluginName": "Prometheus"
-    }
-  ],
-  "__elements": {},
-  "__requires": [
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "12.1.0-89781.patch2-90617"
-    },
-    {
-      "type": "datasource",
-      "id": "prometheus",
-      "name": "Prometheus",
-      "version": "1.0.0"
-    },
-    {
-      "type": "panel",
-      "id": "stat",
-      "name": "Stat",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "timeseries",
-      "name": "Time series",
-      "version": ""
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -62,7 +25,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
-  "id": null,
+  "id": 5,
   "links": [
     {
       "asDropdown": false,
@@ -81,7 +44,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_GRAFANACLOUD-SHIZUN-PROM}"
+        "uid": "PBFA97CFB590B2093"
       },
       "fieldConfig": {
         "defaults": {
@@ -137,15 +100,16 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.1.0-89781.patch2-90617",
+      "pluginVersion": "12.2.0-17449462949",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "${DS_GRAFANACLOUD-SHIZUN-PROM}"
           },
+          "editorMode": "code",
           "exemplar": false,
-          "expr": "count(container_last_seen{instance=~\"$node\",job=~\"$job\",image!=\"\"})",
+          "expr": "count(container_last_seen{id=~\"/system.slice/docker-.*\"})",
           "instant": true,
           "interval": "",
           "intervalFactor": 2,
@@ -162,7 +126,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_GRAFANACLOUD-SHIZUN-PROM}"
+        "uid": "PBFA97CFB590B2093"
       },
       "fieldConfig": {
         "defaults": {
@@ -218,19 +182,21 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.1.0-89781.patch2-90617",
+      "pluginVersion": "12.2.0-17449462949",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "${DS_GRAFANACLOUD-SHIZUN-PROM}"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(container_memory_usage_bytes{instance=~\"$node\",job=~\"$job\",image!=\"\"})/1024/1024",
+          "expr": "sum(container_memory_usage_bytes{id=~\"/system.slice/docker-.*\"})/1024/1024",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "",
           "metric": "container_memory_usage_bytes",
+          "range": true,
           "refId": "A",
           "step": 240
         }
@@ -242,7 +208,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_GRAFANACLOUD-SHIZUN-PROM}"
+        "uid": "PBFA97CFB590B2093"
       },
       "fieldConfig": {
         "defaults": {
@@ -298,19 +264,21 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.1.0-89781.patch2-90617",
+      "pluginVersion": "12.2.0-17449462949",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "${DS_GRAFANACLOUD-SHIZUN-PROM}"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(machine_memory_bytes{instance=~\"$node\",job=~\"$job\"})/1024/1024",
+          "expr": "sum(machine_memory_bytes)/1024/1024",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "",
           "metric": "container_memory_usage_bytes",
+          "range": true,
           "refId": "A",
           "step": 240
         }
@@ -322,7 +290,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_GRAFANACLOUD-SHIZUN-PROM}"
+        "uid": "PBFA97CFB590B2093"
       },
       "fieldConfig": {
         "defaults": {
@@ -378,19 +346,21 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.1.0-89781.patch2-90617",
+      "pluginVersion": "12.2.0-17449462949",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "${DS_GRAFANACLOUD-SHIZUN-PROM}"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(irate(container_cpu_usage_seconds_total{instance=~\"$node\",job=~\"$job\",image!=\"\"}[$__rate_interval]) * 100) ",
+          "expr": "sum(irate(container_cpu_usage_seconds_total{id=~\"/system.slice/docker.*\"}[$__rate_interval]) * 100) ",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "",
           "metric": "container_memory_usage_bytes",
+          "range": true,
           "refId": "A",
           "step": 240
         }
@@ -402,7 +372,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_GRAFANACLOUD-SHIZUN-PROM}"
+        "uid": "PBFA97CFB590B2093"
       },
       "fieldConfig": {
         "defaults": {
@@ -458,19 +428,21 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "12.1.0-89781.patch2-90617",
+      "pluginVersion": "12.2.0-17449462949",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "${DS_GRAFANACLOUD-SHIZUN-PROM}"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(machine_cpu_cores{instance=~\"$node\",job=~\"$job\"})",
+          "expr": "sum(machine_cpu_cores)",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "",
           "metric": "container_memory_usage_bytes",
+          "range": true,
           "refId": "A",
           "step": 240
         }
@@ -482,7 +454,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_GRAFANACLOUD-SHIZUN-PROM}"
+        "uid": "PBFA97CFB590B2093"
       },
       "fieldConfig": {
         "defaults": {
@@ -513,6 +485,7 @@
               "type": "linear"
             },
             "showPoints": "never",
+            "showValues": false,
             "spanNulls": 600000,
             "stacking": {
               "group": "A",
@@ -557,11 +530,11 @@
         },
         "tooltip": {
           "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
+          "mode": "multi",
+          "sort": "desc"
         }
       },
-      "pluginVersion": "12.1.0-89781.patch2-90617",
+      "pluginVersion": "12.2.0-17449462949",
       "targets": [
         {
           "datasource": {
@@ -570,7 +543,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum by (container) (rate(container_cpu_usage_seconds_total{instance=~\"$node\",job=~\"$job\",image!=\"\", service=~\"$service\", container=~\"$container\"}[$__rate_interval]) ) * 100 ",
+          "expr": "sum by (id) (rate(container_cpu_usage_seconds_total{id=~\"/system.slice/docker.*\"}[$__rate_interval]) ) * 100 ",
           "interval": "",
           "intervalFactor": 1,
           "legendFormat": "{{name}}",
@@ -586,7 +559,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_GRAFANACLOUD-SHIZUN-PROM}"
+        "uid": "PBFA97CFB590B2093"
       },
       "fieldConfig": {
         "defaults": {
@@ -617,6 +590,7 @@
               "type": "linear"
             },
             "showPoints": "never",
+            "showValues": false,
             "spanNulls": 600000,
             "stacking": {
               "group": "A",
@@ -660,11 +634,11 @@
         },
         "tooltip": {
           "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
+          "mode": "multi",
+          "sort": "desc"
         }
       },
-      "pluginVersion": "12.1.0-89781.patch2-90617",
+      "pluginVersion": "12.2.0-17449462949",
       "targets": [
         {
           "datasource": {
@@ -673,7 +647,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum by (container) (container_memory_usage_bytes{instance=~\"$node\",job=~\"$job\",image!=\"\", service=~\"$service\", container=~\"$container\"})",
+          "expr": "sum by (id) (container_memory_usage_bytes{id=~\"/system.slice/docker.*\"})",
           "hide": false,
           "interval": "",
           "intervalFactor": 1,
@@ -690,7 +664,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_GRAFANACLOUD-SHIZUN-PROM}"
+        "uid": "PBFA97CFB590B2093"
       },
       "fieldConfig": {
         "defaults": {
@@ -721,6 +695,7 @@
               "type": "linear"
             },
             "showPoints": "never",
+            "showValues": false,
             "spanNulls": 600000,
             "stacking": {
               "group": "A",
@@ -769,7 +744,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.1.0-89781.patch2-90617",
+      "pluginVersion": "12.2.0-17449462949",
       "targets": [
         {
           "datasource": {
@@ -778,7 +753,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum by (container) (rate(container_network_receive_bytes_total{instance=~\"$node\",job=~\"$job\",image!=\"\", service=~\"$service\", container=~\"$container\"}[$__rate_interval]))",
+          "expr": "sum by (id, interface) (rate(container_network_receive_bytes_total{id=\"/\"}[$__rate_interval]))",
           "interval": "",
           "intervalFactor": 1,
           "legendFormat": "recv {{container}}",
@@ -794,7 +769,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "-(sum by (container) (rate(container_network_transmit_bytes_total{instance=~\"$node\",job=~\"$job\",image!=\"\", service=~\"$service\", container=~\"$container\"}[$__rate_interval])))",
+          "expr": "-(sum by (id, interface) (rate(container_network_transmit_bytes_total{id=\"/\"}[$__rate_interval])))",
           "hide": false,
           "interval": "",
           "intervalFactor": 1,
@@ -809,7 +784,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_GRAFANACLOUD-SHIZUN-PROM}"
+        "uid": "PBFA97CFB590B2093"
       },
       "fieldConfig": {
         "defaults": {
@@ -840,6 +815,7 @@
               "type": "linear"
             },
             "showPoints": "never",
+            "showValues": false,
             "spanNulls": 600000,
             "stacking": {
               "group": "A",
@@ -883,11 +859,11 @@
         },
         "tooltip": {
           "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
+          "mode": "multi",
+          "sort": "desc"
         }
       },
-      "pluginVersion": "12.1.0-89781.patch2-90617",
+      "pluginVersion": "12.2.0-17449462949",
       "targets": [
         {
           "datasource": {
@@ -896,10 +872,10 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum by (container) (rate(container_fs_reads_bytes_total{instance=~\"$node\",job=~\"$job\",image!=\"\", service=~\"$service\", container=~\"$container\"}[$__rate_interval]))",
+          "expr": "sum by (id) (rate(container_fs_reads_bytes_total{id=~\"/system.slice/docker.*\"}[$__rate_interval]))",
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "read {{container}}",
+          "legendFormat": "read {{id}}",
           "metric": "container_fs_reads_bytes_total",
           "range": true,
           "refId": "read",
@@ -925,6 +901,7 @@
       "type": "timeseries"
     }
   ],
+  "preload": false,
   "refresh": "1m",
   "schemaVersion": 41,
   "tags": [
@@ -933,110 +910,15 @@
     "prometheus"
   ],
   "templating": {
-    "list": [
-      {
-        "allValue": ".*",
-        "current": {},
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_GRAFANACLOUD-SHIZUN-PROM}"
-        },
-        "definition": "label_values(container_memory_usage_bytes{image!=\"\"}, job)",
-        "description": "",
-        "includeAll": true,
-        "label": "Job",
-        "multi": true,
-        "name": "job",
-        "options": [],
-        "query": {
-          "query": "label_values(container_memory_usage_bytes{image!=\"\"}, job)",
-          "refId": "StandardVariableQuery"
-        },
-        "refresh": 2,
-        "regex": "",
-        "sort": 1,
-        "type": "query"
-      },
-      {
-        "allValue": ".*",
-        "current": {},
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_GRAFANACLOUD-SHIZUN-PROM}"
-        },
-        "definition": "label_values(container_memory_usage_bytes{job=~\"$job\", image!=\"\"},service)",
-        "includeAll": true,
-        "label": "Service",
-        "multi": true,
-        "name": "service",
-        "options": [],
-        "query": {
-          "qryType": 1,
-          "query": "label_values(container_memory_usage_bytes{job=~\"$job\", image!=\"\"},service)",
-          "refId": "PrometheusVariableQueryEditor-VariableQuery"
-        },
-        "refresh": 2,
-        "regex": "",
-        "sort": 1,
-        "type": "query"
-      },
-      {
-        "allValue": ".*",
-        "current": {},
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_GRAFANACLOUD-SHIZUN-PROM}"
-        },
-        "definition": "label_values(container_memory_usage_bytes{job=~\"$job\", image!=\"\", service=~\"$service\"},instance)",
-        "description": "",
-        "includeAll": true,
-        "label": "Host",
-        "multi": true,
-        "name": "node",
-        "options": [],
-        "query": {
-          "qryType": 1,
-          "query": "label_values(container_memory_usage_bytes{job=~\"$job\", image!=\"\", service=~\"$service\"},instance)",
-          "refId": "PrometheusVariableQueryEditor-VariableQuery"
-        },
-        "refresh": 2,
-        "regex": "",
-        "sort": 1,
-        "type": "query"
-      },
-      {
-        "current": {},
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_GRAFANACLOUD-SHIZUN-PROM}"
-        },
-        "definition": "label_values(container_memory_usage_bytes{job=~\"$job\", image!=\"\", service=~\"$service\", instance=~\"$node\"},container)",
-        "includeAll": true,
-        "label": "Container",
-        "multi": true,
-        "name": "container",
-        "options": [],
-        "query": {
-          "qryType": 1,
-          "query": "label_values(container_memory_usage_bytes{job=~\"$job\", image!=\"\", service=~\"$service\", instance=~\"$node\"},container)",
-          "refId": "PrometheusVariableQueryEditor-VariableQuery"
-        },
-        "refresh": 1,
-        "regex": "",
-        "sort": 1,
-        "type": "query"
-      }
-    ]
+    "list": []
   },
   "time": {
-    "from": "now-24h",
+    "from": "now-3h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Docker monitoring",
+  "title": "Docker Monitoring",
   "uid": "m0arCBf7k",
-  "version": 10,
-  "weekStart": "",
-  "gnetId": 15798
+  "version": 1
 }
