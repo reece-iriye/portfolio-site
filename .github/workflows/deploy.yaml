@@ -69,5 +69,6 @@ jobs:
               git pull origin main && \
               docker compose --env-file .env.prod -f compose.prod.yaml pull && \
               docker compose --env-file .env.prod -f compose.prod.yaml build && \
-              docker compose --env-file .env.prod -f compose.prod.yaml up -d && \
+              docker compose --env-file .env.prod -f compose.prod.yaml up -d --remove-orphans --force-recreate && \
+              docker system prune -f && \
               shred -u .env.prod"
