@@ -36,7 +36,10 @@ services:
       - GF_ANALYTICS_GOOGLE_ANALYTICS_UA_ID=""
       - GF_EXTERNAL_IMAGE_STORAGE_PROVIDER=""
     volumes:
-      - $PWD/grafana/provisioning:/etc/grafana/provisioning
+      - $PWD/grafana/provisioning:/etc/grafana/provisioning/docker-monitoring.json
+      - $PWD/grafana/provisioning:/etc/grafana/provisioning/nginx-performance-geo-dashboard.json
+      - $PWD/grafana/provisioning:/etc/grafana/provisioning/node-exporter.json
+      - $PWD/grafana/provisioning:/etc/grafana/provisioning/portfolio-server.json
       - grafana-storage:/var/lib/grafana
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
