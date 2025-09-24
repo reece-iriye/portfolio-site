@@ -1,0 +1,20 @@
+FROM grafana/grafana:12.2.0-17449462949-ubuntu
+
+USER root
+
+RUN mkdir -p /etc/grafana/provisioning/datasources \
+    && mkdir -p /etc/grafana/provisioning/dashboards
+
+COPY ./provisioning/datasources/ /etc/grafana/provisioning/datasources/
+COPY ./provisioning/dashboards/ /etc/grafana/provisioning/dashboards/
+
+COPY ./provisioning/dashboards/dashboards/*.json /var/lib/grafana/dashboards/
+
+RUN chown -R grafana:grafana /etc/grafana/provisioning \
+    && chown -R grafana:grafana /var/lib/grafana/dashboards
+
+USER grafana
+
+EXPOSE 3000
+
+ENTRYPOINT ["/run.sh"]
