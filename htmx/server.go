@@ -137,20 +137,12 @@ func main() {
 
 	// Health check endpoint - restrict to internal access only
 	mux.Handle("/health", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if !isInternalRequest(r) {
-			http.Error(w, "Not Found", http.StatusNotFound)
-			return
-		}
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("OK"))
 	}))
 
 	// Metrics endpoint - restrict to internal access only
 	mux.Handle("/metrics", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if !isInternalRequest(r) {
-			http.Error(w, "Not Found", http.StatusNotFound)
-			return
-		}
 		promhttp.Handler().ServeHTTP(w, r)
 	}))
 
