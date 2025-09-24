@@ -22,12 +22,30 @@
   "links": [],
   "panels": [
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "palette-classic"
           },
-          "mappings": [],
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "index": 1,
+                  "text": "App is down :("
+                },
+                "1": {
+                  "index": 0,
+                  "text": "App is up!"
+                }
+              },
+              "type": "value"
+            }
+          ],
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -1227,5 +1245,5 @@
   "timezone": "",
   "title": "Reece Iriye Portfolio OpenTelemetry Application Dashboard",
   "uid": "adgrg6q",
-  "version": 25
+  "version": 27
 }
