@@ -5,6 +5,13 @@ global:
   evaluation_interval: "30s"
 
 scrape_configs:
+  - job_name: "htmx-portfolio-opentelemetry"
+    static_configs:
+      - targets: ["htmx-portfolio:8080"]
+    metrics_path: /metrics
+    scrape_interval: 15s
+    honor_labels: true
+
   - job_name: "nginx-lua-logs"
     metrics_path: /metrics
     static_configs:
