@@ -82,7 +82,8 @@ func main() {
 	mux := http.NewServeMux()
 	staticDir := "./static/"
 
-	mux.Handle("/static/", instrumentedHandler(
+	// Static file serving with security headers
+	mux.Handle("/static/", metricsMiddleware(
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if strings.Contains(r.URL.Path, "..") || strings.Contains(r.URL.Path, "~") {
 				http.Error(w, "Invalid path", http.StatusBadRequest)
@@ -114,17 +115,25 @@ func main() {
 		"static",
 	))
 
-	// Application routes with controlled cardinality
-	mux.Handle("/", instrumentedHandler(homeHandler, "home"))
-	mux.Handle("/api/home", instrumentedHandler(homeHandler, "api_home"))
-	mux.Handle("/api/work-history", instrumentedHandler(workHandler, "api_work"))
-	mux.Handle("/api/contact-me", instrumentedHandler(contactHandler, "api_contact"))
-	mux.Handle("/api/contact", instrumentedHandler(contactSubmitHandler, "api_contact_submit"))
+	mux.Handle("/", metricsMiddleware(http.HandlerFunc(homeHandler), "home"))
+	mux.Handle("/api/home", metricsMiddleware(http.HandlerFunc(homeHandler), "home"))
+	mux.Handle(
+		"/api/work-history",
+		metricsMiddleware(http.HandlerFunc(workHandler), "work_history"),
+	)
+	mux.Handle("/api/contact-me", metricsMiddleware(http.HandlerFunc(contactHandler), "contact_me"))
+	mux.Handle(
+		"/api/contact",
+		metricsMiddleware(http.HandlerFunc(contactSubmitHandler), "contact_submit"),
+	)
 
-	mux.Handle("/home", instrumentedHandler(homeHandler, "home"))
-	mux.Handle("/work-history", instrumentedHandler(workHandler, "work"))
-	mux.Handle("/contact-me", instrumentedHandler(contactHandler, "contact"))
-	mux.Handle("/contact", instrumentedHandler(contactSubmitHandler, "contact_submit"))
+	mux.Handle("/home", metricsMiddleware(http.HandlerFunc(homeHandler), "home"))
+	mux.Handle("/work-history", metricsMiddleware(http.HandlerFunc(workHandler), "work_history"))
+	mux.Handle("/contact-me", metricsMiddleware(http.HandlerFunc(contactHandler), "contact_me"))
+	mux.Handle(
+		"/contact",
+		metricsMiddleware(http.HandlerFunc(contactSubmitHandler), "contact_submit"),
+	)
 
 	// Health check endpoint - restrict to internal access only
 	mux.Handle("/health", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -227,7 +236,7 @@ func initMetrics() error {
 
 	errorTotal, err = meter.Int64Counter(
 		"errors_total",
-		metric.WithDescription("Total errors by type"),
+		metric.WithDescription("Total errors by type and endpoint"),
 	)
 	if err != nil {
 		return err
@@ -253,43 +262,41 @@ func initMetrics() error {
 	return nil
 }
 
-func instrumentedHandler(handler http.HandlerFunc, endpoint string) http.Handler {
+// metricsMiddleware provides consistent instrumentation for all handlers
+func metricsMiddleware(next http.Handler, endpoint string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 		ctx := r.Context()
+
+		// Normalize method and endpoint for consistent metrics
+		method := normalizeMethod(r.Method)
+		normalizedEndpoint := normalizeEndpoint(r.URL.Path, endpoint)
 
 		httpRequestsInFlight.Add(ctx, 1)
 		defer httpRequestsInFlight.Add(ctx, -1)
 
 		wrappedWriter := &responseWriter{ResponseWriter: w, statusCode: http.StatusOK}
 
-		handler(wrappedWriter, r)
+		next.ServeHTTP(wrappedWriter, r)
 
 		duration := time.Since(start).Seconds()
 		statusClass := getStatusClass(wrappedWriter.statusCode)
-		method := normalizeMethod(r.Method)
 
 		labels := metric.WithAttributes(
 			attribute.String("method", method),
-			attribute.String("endpoint", endpoint),
+			attribute.String("endpoint", normalizedEndpoint),
 			attribute.String("status_class", statusClass),
 		)
 
 		httpRequestsTotal.Add(ctx, 1, labels)
-		httpRequestDuration.Record(ctx, duration,
-			metric.WithAttributes(
-				attribute.String("method", method),
-				attribute.String("endpoint", endpoint),
-			),
-		)
+		httpRequestDuration.Record(ctx, duration, labels)
 
 		if wrappedWriter.statusCode >= 400 {
-			errorTotal.Add(ctx, 1,
-				metric.WithAttributes(
-					attribute.String("type", "http_error"),
-					attribute.String("status_class", statusClass),
-				),
-			)
+			errorTotal.Add(ctx, 1, metric.WithAttributes(
+				attribute.String("type", "http_error"),
+				attribute.String("endpoint", normalizedEndpoint),
+				attribute.String("status_class", statusClass),
+			))
 		}
 	})
 }
@@ -306,10 +313,47 @@ func (rw *responseWriter) WriteHeader(code int) {
 
 func normalizeMethod(method string) string {
 	switch method {
-	case "GET", "POST", "PUT", "DELETE", "PATCH":
+	case "GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS":
 		return method
 	default:
 		return "OTHER"
+	}
+}
+
+func normalizeEndpoint(path, providedEndpoint string) string {
+	// Use the provided endpoint if it's already normalized
+	if providedEndpoint != "" {
+		return providedEndpoint
+	}
+
+	// Normalize common paths to prevent cardinality issues
+	path = strings.TrimSuffix(path, "/")
+
+	switch {
+	case path == "" || path == "/" || path == "/home" || path == "/api/home":
+		return "home"
+	case path == "/work-history" || path == "/api/work-history":
+		return "work_history"
+	case path == "/contact-me" || path == "/api/contact-me":
+		return "contact_me"
+	case path == "/contact" || path == "/api/contact":
+		return "contact_submit"
+	case strings.HasPrefix(path, "/static/"):
+		return "static"
+	case strings.HasPrefix(path, "/api/"):
+		apiPath := strings.TrimPrefix(path, "/api/")
+		segments := strings.Split(apiPath, "/")
+		if len(segments) > 0 {
+			return "api_" + segments[0]
+		}
+		return "api_unknown"
+	default:
+		// For unknown paths, use the first segment or "other"
+		segments := strings.Split(strings.TrimPrefix(path, "/"), "/")
+		if len(segments) > 0 && segments[0] != "" {
+			return segments[0]
+		}
+		return "other"
 	}
 }
 
@@ -329,15 +373,21 @@ func getStatusClass(statusCode int) string {
 }
 
 func trackUptime(ctx context.Context) {
+	start := time.Now()
 	ticker := time.NewTicker(15 * time.Second)
 	defer ticker.Stop()
+
+	uptimeCounter.Add(ctx, time.Since(start).Seconds())
+	lastRecord := time.Now()
 
 	for {
 		select {
 		case <-ctx.Done():
 			return
 		case <-ticker.C:
-			uptimeCounter.Add(ctx, 15)
+			elapsed := time.Since(lastRecord).Seconds()
+			uptimeCounter.Add(ctx, elapsed)
+			lastRecord = time.Now()
 		}
 	}
 }
@@ -381,6 +431,7 @@ func renderPage(w http.ResponseWriter, r *http.Request, page string, data interf
 	if !ok {
 		errorTotal.Add(ctx, 1, metric.WithAttributes(
 			attribute.String("type", "template_not_found"),
+			attribute.String("endpoint", normalizeEndpoint(r.URL.Path, "")),
 		))
 		http.Error(w, "Template not found", http.StatusInternalServerError)
 		return
@@ -405,6 +456,7 @@ func renderPage(w http.ResponseWriter, r *http.Request, page string, data interf
 		if err := t.ExecuteTemplate(w, "Content", data); err != nil {
 			errorTotal.Add(ctx, 1, metric.WithAttributes(
 				attribute.String("type", "template_execution"),
+				attribute.String("endpoint", normalizeEndpoint(r.URL.Path, "")),
 			))
 			http.Error(w, "Error executing template", http.StatusInternalServerError)
 		}
@@ -415,6 +467,7 @@ func renderPage(w http.ResponseWriter, r *http.Request, page string, data interf
 	if err := t.ExecuteTemplate(contentBuf, "Content", data); err != nil {
 		errorTotal.Add(ctx, 1, metric.WithAttributes(
 			attribute.String("type", "template_execution"),
+			attribute.String("endpoint", normalizeEndpoint(r.URL.Path, "")),
 		))
 		http.Error(w, "Error executing template", http.StatusInternalServerError)
 		return
@@ -425,6 +478,7 @@ func renderPage(w http.ResponseWriter, r *http.Request, page string, data interf
 	}); err != nil {
 		errorTotal.Add(ctx, 1, metric.WithAttributes(
 			attribute.String("type", "layout_execution"),
+			attribute.String("endpoint", normalizeEndpoint(r.URL.Path, "")),
 		))
 		http.Error(w, "Error executing layout template", http.StatusInternalServerError)
 	}
@@ -444,6 +498,7 @@ func handleGet(w http.ResponseWriter, r *http.Request, page string) {
 
 func contactSubmitHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+	endpoint := normalizeEndpoint(r.URL.Path, "")
 
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
@@ -453,6 +508,7 @@ func contactSubmitHandler(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
 		errorTotal.Add(ctx, 1, metric.WithAttributes(
 			attribute.String("type", "form_parse_error"),
+			attribute.String("endpoint", endpoint),
 		))
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(
@@ -473,6 +529,7 @@ func contactSubmitHandler(w http.ResponseWriter, r *http.Request) {
 		formData.Body == "" {
 		errorTotal.Add(ctx, 1, metric.WithAttributes(
 			attribute.String("type", "form_validation_error"),
+			attribute.String("endpoint", endpoint),
 		))
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(
@@ -485,8 +542,8 @@ func contactSubmitHandler(w http.ResponseWriter, r *http.Request) {
 	if err := sendContactEmail(ctx, formData); err != nil {
 		errorTotal.Add(ctx, 1, metric.WithAttributes(
 			attribute.String("type", "email_send_error"),
+			attribute.String("endpoint", endpoint),
 		))
-		log.Printf("Error sending email: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(
 			w,
