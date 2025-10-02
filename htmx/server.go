@@ -135,13 +135,11 @@ func main() {
 		metricsMiddleware(http.HandlerFunc(contactSubmitHandler), "contact_submit"),
 	)
 
-	// Health check endpoint - restrict to internal access only
 	mux.Handle("/health", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("OK"))
 	}))
 
-	// Metrics endpoint - restrict to internal access only
 	mux.Handle("/metrics", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		promhttp.Handler().ServeHTTP(w, r)
 	}))
