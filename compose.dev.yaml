@@ -66,7 +66,7 @@ services:
       - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($|/)'
 
   cadvisor:
-    image: bitnami/cadvisor:0.53.0-debian-12-r9
+    image: google/cadvisor:v0.33.0
     container_name: cadvisor
     restart: unless-stopped
     ports:
